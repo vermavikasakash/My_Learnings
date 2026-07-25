@@ -1,0 +1,144 @@
+// serverless : AWS LAMBDA (It will always sleep when no request, 1Million clicks are free) 
+1. Creating a serverless function on AWS
+1. Go to AWS, search for Lambda
+2. Inside Lambda go to functions, click on function, create the function, and click on deploy
+3. Add triggers for created function -click on API GATEWAY, Select rest api, and click on add in aws on function page only
+
+Note : we can connect different - different apis to our api gateway in realtime
+eg : api gateway [
+- getUsers
+- createUsers
+- ...many more
+]
+
+
+// non serverless : AWS EC2 (It will always run, for 0 traffic also we are going to be charged)
+1. Go to AWS, search for EC2
+1. Click on Launch servers
+- We have to select operating system
+- We have to select RAM
+- We have to select networking, firewall
+
+// serverless framework for deployment (https://www.serverless.com)
+We have created a function on aws lambda, which is just a demo. In real time project we are writing lot of function and apis.
+so to deploy them on any cloud platform, we will be using framework called as serverless.
+
+install serverless (in project)
+Select AWS-Node.js- HTTP API  (it will install the yaml for us in project)
+
+Note : we can create this yaml manually as well.
+
+//------------- serverless deployment from our cli (project)
+Typical project structure
+
+my-api/
+│
+├── handler.js
+├── package.json
+├── serverless.yml
+└── src/
+
+// handler.js
+module.exports.getUsers = async () => {
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      users: [],
+    }),
+  };
+};
+
+module.exports.createUser = async () => {
+  return {
+    statusCode: 201,
+    body: JSON.stringify({
+      message: "User created",
+    }),
+  };
+};
+
+Example serverless.yml
+
+service: user-api
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-south-1
+  stage: dev
+
+functions:
+  getUsersFn:
+    handler: hello.getUsers // code or fn is present inside hello.getusers
+    events:                 // we have only one event that is httpApi
+      - httpApi:
+          path: /users
+          method: GET
+
+  createUser:
+    handler: hello.createUser
+    events:
+      - httpApi:
+          path: /users
+          method: POST
+
+Deployment : ----
+Configure AWS credentials once:
+aws configure
+
+Then deploy:
+serverless deploy or sls deploy
+
+--------------
+for first time we need aws api key :
+
+-----------------Goto AWS - IAM service ------------------------
+
+create an user (give any name eg: ecommerce-app), attach policies- lambda or administrator policy (user created)
+click on created user (ecommerce-app), click on create access key (CLI). we get AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY
+ 
+now on serverless command enter these two keys with export. and done
+----------------
+
+Serverless Framework will automatically:
+
+Upload your code
+Create Lambda functions
+Create an API Gateway
+Configure routes
+Create IAM roles
+Configure CloudWatch logs
+
+You don't manually create these resources.
+
+
+---- CICD updated ----
+name: Deploy Serverless
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install
+
+      - run: npm test
+
+      - run: npm install -g serverless
+
+      - run: serverless deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -1,0 +1,593 @@
+-------------------NODE JS----------------------
+
+status code :
+100 -> informational
+301 -> Redirectional
+
+200 → Success   (2xx → Success)
+201 → Created
+
+400 → Bad request (4xx → Client mistake)
+401 → Login required / Invalid token
+403 → Permission denied
+404 → Resource not found
+409 → Conflict (Already exists)
+
+500 → Internal server error (5xx → Server mistake)
+
+# QUES : What is a Proxy?
+ANS: A proxy is an intermediate (like middleman) that receives a request from one side and forwards it to another side.
+
+A Forward Proxy represents the client. The website thinks: "The request came from the proxy."
+Client -> Forward Proxy -> Internet -> Web
+usecases : Hide client IP, Access blocked websites,Content filtering, Corporate networks
+
+A Reverse Proxy represents the server. eg nginx
+
+ Client ->Reverse Proxy -> Many backend servers
+
+usecases: Load balancing, Security, Caching,Routing
+
+The client thinks: "I'm talking to one server.",But the reverse proxy forwards the request to one of many backend servers.
+
+QUES 1 : What is close callbacks in node
+✅ ANS: close callback is a function that is called/invoked when a resource is closed, such as a file, socket, or HTTP connection.
+A "close callback" is simply a function that you provide to execute after a resource (stream, connection, server) is closed — either by listening to a .on('close', callback) event or passing a callback to a .close(callback) method.
+
+🔄 Difference Between close and end
+close: Resource is fully closed (file descriptor, connection, etc.).
+end: No more data to be sent/received, but the resource might still be open.
+
+Purpose:
+The close callback serves several purposes:
+
+1. *Cleanup*: It allows you to perform any necessary cleanup tasks, such as releasing system resources, when the resource is no longer needed.
+2. *Error handling*: Close callbacks can be used to handle errors that occur when closing a resource.
+3. *Notification*: They provide a way to notify other parts of your application that a resource has been closed.
+
+Examples:
+Here are a few examples of close callbacks in Node.js:
+
+*File close callback:*
+//This is triggered when the stream and its underlying file descriptor are closed.
+```
+const fs = require('fs');
+const stream = fs.createReadStream('file.txt');
+
+stream.on('close', () => {
+  console.log('Stream has been closed.');
+});
+
+```
+
+*Socket close callback:*
+This listens to the close event on a socket, indicating that the client disconnected
+```
+const net = require('net');
+
+const server = net.createServer((socket) => {
+  socket.on('close', () => {
+    console.log('Socket closed');
+  });
+});
+```
+
+*HTTP connection close callback:*
+```
+const http = require('http');
+
+http.createServer((req, res) => {
+  req.on('close', () => {
+    console.log('HTTP connection closed');
+  });
+  res.end();
+}).listen(3000);
+```
+
+Best practices:
+When using close callbacks:
+
+1. *Always handle errors*: Make sure to handle any errors that may occur when closing a resource.
+2. *Perform necessary cleanup*: Use the close callback to perform any necessary cleanup tasks.
+3. *Keep the callback concise*: Keep the close callback concise and focused on the necessary tasks.
+Difference : 
+Callback: General-purpose function used in any async operation.
+Close callback: Special callback triggered only when a resource like a stream or socket is closed.
+
+QUES 2.What is cluster in node js
+✅ ANS:In Node.js, a cluster is a group of worker processes that share the same server port. Clustering allows you to take advantage of multi-core processors and scale your application horizontally.
+
+How Clustering Works
+1. A master process is created, which listens for incoming connections.
+2. The master process forks multiple worker processes, which share the same server port.
+3. Incoming connections are distributed among the worker processes.
+4. Each worker process handles the incoming connections independently.
+
+Benefits of Clustering
+1. *Improved Performance*: By utilizing multiple cores, clustering can significantly improve the performance of your application.
+2. *Scalability*: Clustering allows you to scale your application horizontally by adding more worker processes.
+3. *Fault Tolerance*: If one worker process crashes, the other worker processes can continue to handle incoming connections.
+
+Node.js Cluster Module
+Node.js provides a built-in `cluster` module that makes it easy to create and manage clusters. Here's an example:
+
+```
+const cluster = require('cluster');
+const http = require('http');
+const numCPUs = require('os').cpus().length;
+
+if (cluster.isMaster) {
+  console.log(`Master ${process.pid} is running`);
+
+  // Fork workers.
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+  });
+} else {
+  // Workers can share any TCP connection
+  // In this case it is an HTTP server
+  http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end('hello world\n');
+  }).listen(8000);
+
+  console.log(`Worker ${process.pid} started`);
+}
+```
+
+
+QUES 3:What is setImmediate in node
+✅ ANS:`setImmediate()` is a function that schedules a callback function to be executed in the next iteration of the event loop.
+This means that the callback will be executed after the current operation is complete, but before any I/O operations or other asynchronous tasks are processed.
+
+Use cases
+`setImmediate()` is useful in scenarios where you need to execute a callback function after the current operation is complete, but without blocking the event loop. Some common use cases include:
+
+- Handling asynchronous errors
+- Implementing cooperative scheduling
+- Avoiding blocking the event loop
+
+Execution of event loop :
+┌────────────────────────┐
+│   process.nextTick()   │ ← Microtask (highest priority)
+├────────────────────────┤
+│        Timers          │ ← setTimeout, setInterval
+├────────────────────────┤
+│   Pending Callbacks    │
+├────────────────────────┤
+│     Idle, Prepare      │ (internal)
+├────────────────────────┤
+│         Poll           │ ← I/O callbacks
+├────────────────────────┤
+│         Check          │ ← setImmediate
+├────────────────────────┤
+│    Close Callbacks     │ ← socket.on('close')
+└────────────────────────┘
+
+
+QUES 4 :What is piping in node js
+ANS: piping is a mechanism that allows you to connect multiple streams together, enabling the output of one stream to be used as the input for another stream.
+
+What are streams?
+In Node.js, Buffer and Stream are core concepts used for handling binary data and large data efficiently.
+
+A Buffer is a temporary memory area used to store raw binary data.
+A Stream processes data chunk-by-chunk instead of loading everything into memory at once.
+
+Buffer = temporary memory chunk
+Stream = continuous flow of chunks
+
+“A Buffer in Node.js is a temporary binary memory container used to store raw data,
+ while a Stream processes data incrementally in chunks instead of loading everything into memory at once. 
+Streams are more memory efficient and are commonly used for large file processing, uploads, and real-time data handling.”
+
+"A Buffer in Node.js is a fixed-size block of memory used to store raw binary data outside the V8 heap. It's useful for handling files, network packets, and streams. During streaming, data is transferred in small chunks, and each chunk is represented as a Buffer, allowing Node.js to process large files efficiently without loading everything into memory."
+
+"Buffers are allocated outside the V8 heap because they often store large binary data such as files, images, videos, and network packets. Keeping this data outside the V8 heap prevents excessive garbage collection and allows V8 to focus on managing JavaScript objects efficiently, improving both memory usage and performance."
+
+- *Readable streams*: Allow you to read data from a source.
+- *Writable streams*: Allow you to write data to a destination.
+- *Duplex streams*: Allow you to both read and write data.
+- *Transform streams*: Allow you to modify data as it flows through the stream.
+
+How piping works
+Piping involves connecting the output of one stream to the input of another stream. This creates a pipeline of streams that can process data in a series of steps.
+
+Here's an example of piping:
+
+```
+const fs = require('fs');
+const zlib = require('zlib');
+// Create a readable stream from a file
+const readStream = fs.createReadStream('input.txt');
+
+// Create a transform stream to compress the data
+const compressStream = zlib.createGzip();
+
+// Create a writable stream to write the compressed data to a file
+const writeStream = fs.createWriteStream('output.txt.gz');
+
+// Pipe the streams together
+readStream.pipe(compressStream).pipe(writeStream);
+```
+
+In this example:
+
+- The `readStream` reads data from the `input.txt` file.
+- The `compressStream` compresses the data using gzip.
+- The `writeStream` writes the compressed data to the `output.txt.gz` file.
+
+The `pipe()` method is used to connect the streams together, creating a pipeline that processes the data in a series of steps.
+
+Benefits of piping
+Piping provides several benefits:
+
+- *Efficient data processing*: Piping allows you to process data in a series of steps, making it more efficient than processing data in a single step.
+- *Memory efficiency*: Piping allows you to process large amounts of data without loading it all into memory at once.
+- *Modularity*: Piping enables you to break down complex data processing tasks into smaller, more manageable modules.
+
+QUES 5.Process.next and setImmediate difference in node.js
+
+`process.nextTick()` is a function that schedules a callback function to be executed on the next iteration of the event loop. Here are some key characteristics:
+
+- *High priority*: `process.nextTick()` has higher priority than `setImmediate()`.
+- *Runs before I/O events*: `process.nextTick()` callbacks are executed before any I/O events, such as network requests or file I/O.
+- *Runs on the same phase*: `process.nextTick()` callbacks are executed on the same phase of the event loop as the current operation.
+
+setImmediate()
+`setImmediate()` is a function that schedules a callback function to be executed on the next iteration of the event loop, but after any I/O events. Here are some key characteristics:
+
+- *Lower priority*: `setImmediate()` has lower priority than `process.nextTick()`.
+- *Runs after I/O events*: `setImmediate()` callbacks are executed after any I/O events, such as network requests or file I/O.
+- *Runs on a separate phase*: `setImmediate()` callbacks are executed on a separate phase of the event loop, which is specifically designed for handling immediate callbacks.
+
+Key differences
+Here are the key differences between `process.nextTick()` and `setImmediate()`:
+
+- *Priority*: `process.nextTick()` has higher priority than `setImmediate()`.
+- *Execution order*: `process.nextTick()` callbacks are executed before I/O events, while `setImmediate()` callbacks are executed after I/O events.
+- *Phase*: `process.nextTick()` callbacks are executed on the same phase of the event loop as the current operation, while `setImmediate()` callbacks are executed on a separate phase.
+
+In summary, `process.nextTick()` and `setImmediate()` are both used to schedule asynchronous operations in Node.js, but they have different priorities, execution orders, and phases. The choice between the two depends on the specific requirements of your application.
+
+
+
+QUES 6 :Difference between authentication and authorisation
+✅ ANS: In the context of MERN (MongoDB, Express, React, Node.js) stack, authentication and authorization are two related but distinct concepts:
+
+Authentication
+Authentication is the process of verifying the identity of a user or client. It involves checking the credentials provided by the user, such as username and password, to ensure that they are genuine and valid.
+
+In a MERN application, authentication typically involves:
+
+1. *User registration*: The user provides their credentials, such as username and password, to register with the application.
+2. *User login*: The user provides their credentials to log in to the application.
+3. *Verification*: The application verifies the user's credentials against the stored data in the database.
+
+Authorization
+Authorization is the process of determining what actions an authenticated user can perform on a protected resource. It involves checking the user's permissions, roles, or access control lists (ACLs) to ensure that they have the necessary privileges to access or modify the resource.
+
+In a MERN application, authorization typically involves:
+
+1. *Role-based access control (RBAC)*: Assigning roles to users and defining the permissions associated with each role.
+2. *Attribute-based access control (ABAC)*: Defining policies that grant or deny access to resources based on user attributes, such as department or job function.
+3. *Access control lists (ACLs)*: Defining lists of users or groups that have access to specific resources.
+
+Key differences
+Here are the key differences between authentication and authorization:
+
+1. *Purpose*: Authentication verifies the user's identity, while authorization determines what actions the user can perform.
+2. *Scope*: Authentication is typically performed at the application level, while authorization is performed at the resource level.
+3. *Mechanisms*: Authentication mechanisms include username/password, OAuth, and OpenID Connect, while authorization mechanisms include RBAC, ABAC, and ACLs.
+
+Example in MERN
+Here's an example of how authentication and authorization can be implemented in a MERN application:
+
+1. *Authentication*: Use a library like Passport.js to implement username/password authentication. When the user logs in, verify their credentials against the stored data in the MongoDB database.
+2. *Authorization*: Use a library like Casl.js to implement RBAC. Define roles and permissions for each role, and assign roles to users. When the user requests access to a protected resource, check their permissions against the defined policies.
+
+In summary, authentication and authorization are two distinct concepts that work together to secure a MERN application. Authentication verifies the user's identity, while authorization determines what actions the user can perform on protected resources.
+
+7. fork and spawn in node
+"Node.js is single-threaded for JavaScript execution, so CPU-intensive tasks can block the event loop. The child_process module allows us to run work in separate operating system processes. spawn() is used for running external programs with streamed output, exec() runs shell commands and buffers the entire output, execFile() executes a binary directly without a shell, and fork() creates another Node.js process with built-in IPC for communication."
+
+QUES 8.Difference between running js on browser and on node js
+✅ ANS:
+| Feature            | Browser                   | Node.js                        |
+| ------------------ | ------------------------- | ------------------------------ |
+| Runs in            | Web browser               | Node runtime (on server/local) |
+| DOM Access         | ✅ Yes                     | ❌ No                           |
+| File System Access | ❌ No                      | ✅ Yes                          |
+| Typical Use Case   | UI, events, interactivity | APIs, servers, backend logic   |
+| Module system      | ES Modules                | CommonJS + ES Modules          |
+| Security           | Highly sandboxed          | Less sandboxed                 |
+
+9.Streams and Buffer in node js
+10.What is piping in node js
+11.Event loop in node js
+12.Call back hell in node js
+
+
+QUES 13.Micro and macro task in nodejs
+✅ ANS:
+Microtasks are high-priority tasks that are executed immediately after the current operation and before the event loop continues to the next phase.
+✅ Common Microtasks:
+process.nextTick() (Node.js only – highest priority)
+Promises (.then, .catch, .finally)
+queueMicrotask()
+
+Macrotasks
+These are scheduled in the event loop phases like timers, I/O, etc. They run after all microtasks in the current tick are finished.
+✅ Common Macrotasks:
+setTimeout()
+setInterval()
+setImmediate() (Node.js)
+I/O callbacks (like fs.readFile)
+UI events (in browser)
+
+📊 Execution Priority Summary:
+Synchronous code
+process.nextTick() (Node.js-specific)
+Promise callbacks / queueMicrotask()
+Macrotasks (timers, I/O, setImmediate)
+
+example : Input
+setTimeout(() => console.log('setTimeout'), 0);
+setImmediate(() => console.log('setImmediate'));
+
+Promise.resolve().then(() => console.log('promise'));
+process.nextTick(() => console.log('nextTick'));
+
+console.log('sync');
+
+Output (typical):
+sync
+nextTick
+promise
+setTimeout
+setImmediate
+
+
+QUES 14 : Event loop in node.js 
+"Node.js runs JavaScript on a single main thread using the V8 engine. When synchronous code executes, it runs directly on the call stack and blocks it until completion. For asynchronous operations, Node.js delegates the work. Some operations, such as file system access and cryptographic functions, are handled by libuv's thread pool, while network I/O relies on the operating system's non-blocking APIs. Once an asynchronous operation completes, its callback is placed into the appropriate event loop queue. The event loop continuously checks whether the call stack is empty. When it is, the event loop moves the next ready callback from the queue to the call stack for execution."
+
+"All asynchronous operations are coordinated by libuv, but not all of them use the thread pool. File system operations, cryptographic functions, DNS lookups (in many cases), and compression typically use the libuv thread pool. Network I/O and timers do not; they rely on the operating system's non-blocking event notification mechanisms, and libuv simply listens for those events."
+
+JavaScript
+      │
+      ▼
+Node.js APIs
+      │
+      ▼
+libuv
+      │
+      ├───────────┬──────────────┬─────────────────┐
+      ▼               ▼                  ▼
+ Thread Pool      Timer System      Network Polling
+      │               │                  │
+      ▼               ▼                  ▼
+ OS File APIs    OS Timers         OS Network APIs
+      │                                  │
+      ▼                                  ▼
+ Hard Disk                          Network Card
+
+
+QUES 15 : json web token, access token vs refresh token
+
+
+"JWT is a stateless authentication mechanism.
+After login, the server generates a signed token containing user information such as user ID and role. The client stores the token and sends it with future requests. The server verifies the token signature and identifies the user without storing session data on the server."
+
+How It Works
+1. User logs in
+2. Server validates credentials
+3. Server generates JWT
+4. Client stores JWT
+5. Client sends JWT in Authorization header
+6. Server verifies JWT
+7. Request is authorized
+
+let paylod = {
+  "_id": "123",
+  "role": "admin"
+}
+const token = jwt.sign(payload, JWT_SECRET,{ expiresIn: "1h" }); // creation
+
+const decoded = jwt.verify(token, JWT_SECRET); // verification client sends -> Authorization: Bearer eyJhbGciOi...
+
+1. JWT Structure
+JWT structure (Header.Payload.Signature)
+eg : eyJhbGciOiJIUzI1NiJ9.
+eyJfaWQiOiIxMjMiLCJyb2xlIjoiYWRtaW4ifQ.
+abcxyz...
+
+Header -> Contains metadata: {
+  "alg": "HS256",
+  "typ": "JWT"
+}
+
+Meaning: algorithm used for signing, token type
+
+Payload -> Contains claims/data. 
+{
+  "_id": "123",
+  "role": "admin",
+  "iat": 1710000000,
+  "exp": 1710003600
+}
+Common claims: user id, role, issued at (iat), expiry (exp)
+
+Signature -> Generated using:
+Base64(Header)
++
+Base64(Payload)
++
+Secret Key
+
+The server verifies this signature.
+
+Q. Access Token vs Refresh Token
+
+Access Token : Short-lived.
+Example: 15 minutes, 30 minutes, 1 hour
+Used for API access.
+
+Refresh Token : Long-lived.
+Example:7 days, 30 days, 90 days
+Used only to generate a new access token.
+
+When access token expires: User doesn't need to login again.
+
+Client -> Refresh Endpoint -> New Access Token
+
+Suppose token is stolen. If valid for30 days attacker gets access for 30 days. Thats why Short-lived tokens reduce risk.
+
+QUES 16 : What are headers ?
+✅ ANS : "HTTP headers are key-value pairs that carry metadata about an HTTP request or response. Request headers are sent by the client to provide information such as authorization credentials, content type, and accepted response format. Response headers are sent by the server to describe the response, set cookies, control caching, and provide other metadata. The actual application data is usually sent in the request or response body."
+
+POST /login
+Request ---
+Headers:
+Content-Type: application/json
+
+Body:
+{
+   "email":"vikas@gmail.com",
+   "password":"123456"
+}
+
+Response headers :
+200 OK
+
+Headers:
+Content-Type: application/json
+Set-Cookie: refreshToken=xyz
+
+Body:
+{
+   "accessToken":"abc..."
+}
+
+QUES 17 : what is Same-Origin Policy (SOP) & CORS ?
+SOP is a browser security policy.
+It says: "A webpage cannot read data from another origin unless that origin explicitly allows it."
+
+if flipkart tries to call api of amazon, SOP wont allow it. The browser blocks the response by default.
+Why? Because otherwise any website could steal data from another website that you're logged into.
+
+Then why do we need CORS?
+frontend want to call backend api, and both have different origins because the hostname is different.
+Without CORS:❌ Browser blocks response,Even though you own both.
+CORS is permission,CORS says:"I trust this specific origin."
+
+SERVER RESPONSE : Access-Control-Allow-Origin: https://myapp.com
+
+QUES 18 :What is callback in node
+✅ ANS: a callback is a function that is passed as an argument to another function, which is then executed by that function when a specific operation is complete.
+
+Characteristics of callbacks
+Here are some key characteristics of callbacks in Node.js:
+
+1. *Asynchronous*: Callbacks are used to handle asynchronous operations, such as I/O operations, network requests, or database queries.
+2. *Function as an argument*: A callback is a function that is passed as an argument to another function.
+3. *Executed by the caller*: The callback function is executed by the function that received it as an argument, typically when a specific operation is complete.
+
+
+
+Types of callbacks
+There are two types of callbacks in Node.js:
+
+1. *Error-first callbacks*: These callbacks take an error as their first argument, followed by the result of the operation. This pattern is commonly used in Node.js APIs.
+2. *Regular callbacks*: These callbacks do not take an error as their first argument. Instead, they may take a result or other arguments.
+
+Advantages:
+
+- *Asynchronous*: Callbacks enable asynchronous programming, which is essential for I/O-bound operations.
+- *Non-blocking*: Callbacks allow Node.js to continue executing other tasks while waiting for an operation to complete.
+
+Disadvantages:
+
+- *Callback hell*: Deeply nested callbacks can lead to code that is difficult to read and maintain.
+- *Error handling*: Callbacks require manual error handling, which can be cumbersome.
+
+In Node.js, error handling evolved in stages:
+
+1.Error-first callbacks
+2.Promises (.then/.catch)
+3.try-catch
+4.async-await
+
+1.Error-first callbacks
+
+const fs = require("fs");
+
+fs.readFile("test.txt", "utf-8", (error, data) => {
+
+    if (error) {
+        console.log("Error:", error.message);
+        return;
+    }
+
+    console.log(data);
+});
+
+2.Promises (.then/.catch)
+
+const fs = require("fs/promises");
+
+fs.readFile("test.txt", "utf-8")
+   .then((data) => {
+       console.log(data);
+   })
+   .catch((error) => {
+       console.log("Error:", error.message);
+   });
+
+3. or 4. Async-Await + try-catch (Modern Approach)
+
+const fs = require("fs/promises");
+
+async function readData() {
+
+    try {
+
+        const data = await fs.readFile(
+            "test.txt",
+            "utf-8"
+        );
+
+        console.log(data);
+
+    } catch (error) {
+
+        console.log("Error:", error.message);
+    }
+}
+
+readData();
+
+
+Alternatives to callbacks
+Node.js provides several alternatives to callbacks, including:
+
+- *Promises*: A promise represents a value that may not be available yet. Promises provide a more structured approach to asynchronous programming.
+- *Async/await*: Async/await is a syntax sugar on top of promises that makes asynchronous code look and feel synchronous.
+
+Ques : 
+Express is a minimal Node web framework for routing and middleware that keeps servers simple. Why? Less boilerplate, faster APIs.
+ Ques : Middleware in express :
+"Middleware in Express is a function that executes between receiving an HTTP request and sending the HTTP response. It has access to the request, response, and the next() function.
+Middleware is commonly used for tasks such as logging, authentication, validation, parsing request bodies, and error handling. After completing its work, it either calls next() to pass control to the next middleware or route handler, or it sends a response and ends the request-response cycle."
+
+Next(): passes control to the next middleware in the chain. If you don't call it, the request hangs.
+App.use(): mounts middleware for all HTTP methods at a path.
+App.get(): handles only GET requests for a specific route.
+
+types : app level (app.use), router level (router.use(..)), built in (espres.json, urlencoded, static), error handling (err,req,res,next), third party middleware (cors, helmet,morgan)
+
+
+

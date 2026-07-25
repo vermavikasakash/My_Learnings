@@ -1,0 +1,1493 @@
+
+ EVALUATE THE OUTPUT
+
+1.  const user = {
+  email: "abc@gmail.com",
+  updateEmail: (e) => (this.email = e)
+};
+
+user.updateEmail("updated@gmail.com");
+
+console.log(user.email);
+//console.log(this.email)
+
+OUTPUT-abc@gmail.com because this keyword points to window which is global
+
+
+
+2.  function getItems(list, ...args, moreItem) {
+  return [...list, ...args, moreItem];
+}
+
+const res = getItems(["berry", "apple"], "pear", "kivi");
+console.log(res);
+
+OUTPUT- Syntax Error ; because Rest parameter must be last formal parameter.
+
+3.  let newList = [2, 9].push(4);
+
+console.log(newList);
+
+OUTPUT- 3 because [].push() method returns length of array
+
+B.let newList = [9,3,7].pop();
+
+console.log(newList); // op=7; it will return the removed element
+
+4.const one = false || {} || null
+const two = null || false || ' '
+const three = [ ] || 0 || true
+
+console.log(one, two, three)
+OUTPUT- {},' ',[] because OR Operator will always look for true value. in second case null will be considerd as false.
+for this case --> null || false || ' '  ; none of them are true value. but it will print this value "" because at last it will go for some value if exist
+
+5. const key = "constructor";
+ const obj3 = {};
+
+if (obj3[key]) {
+  console.log("Hello Admin");
+} else {
+  console.log("Hello Ghost");
+}
+OUTPUT- Hello Admin because inside the object prototype, we have key called as constructor. if we will fill somthing else instead of constructor we will get false/else condition.
+
+6.const arr = ["h", "2", "X"];
+delete arr[0];
+
+console.log( arr.length, arr);
+OUTPUT- 3,[undefined, "2", "X"] because delete method will delete the element value only, key (space) will be present which has undefine/empty value.
+
+7.const { fName: dev } = { fName: "shivam" };
+console.log( fName);
+
+OUTPUT-ReferenceError: fName is not defined because we have replaced fName with dev.
+
+8. console.log(parseInt("10+2"));           // 10 as number beacuse it will look upto number from plus sign it wont consider
+console.log(parseInt("7FM"));              // 7 as number, here also it will upto 7 as number and convert it to num.
+console.log( parseInt("hi+10"));           //Nan
+console.log(parseInt("FM7"));            //Nan
+
+9.    function init(x, y, z) {}
+function end(a, b = 0, c) {}
+
+console.log( init.length); //length will be 3
+console.log(end.length)  //length will be 1 because it wont consider 0 as parameter and coming ones.
+ 
+10.
+console.log("1", 0 == "0"); //true
+console.log("2", 0 == []);  //true  because empty array [] will return empty string "" first, then it will be converted to num as 0 for comparison. So comparison will be like 0==0.
+explanation: 
+console.log([].toString()) // ""
+console.log(+"") //0
+
+console.log("3", "0" == []); //false
+
+11.
+const arr = [{ key: "J" }, "2", "X"];
+delete arr[0];
+
+console.log("PROBLEM 74", arr.length, arr);
+
+OUTPUT- arr.length return 3 and arr will return [empty,"2,"X"]
+
+12.
+const key = "constructor";
+const obj3 = {};
+
+if (obj3[key]) {
+  console.log("Hello Admin");
+} else {
+  console.log("Hello Ghost");
+}
+OUTPUT- Hello Admin because inside object prototype we have constructor key present.
+
+13.
+function showMandatory(name) {
+  console.log(name);
+}
+
+showMandatory(); 
+
+OUTPUT- undefine because when we are caling the fn ,that time we havn't passed any argument. so it will take it as undefined. so call will be like showMandatory(undefined)
+
+14.// CREATE A FUNCTION ADD WITHOUT USING FUNCTION AND ARROW FUNCTION
+
+const add = new Function("a", "b", "console.log(a+b);");
+add(10, 20);
+
+15.
+const num8 = 90;
+const num9 = 90;
+
+const resultSum = num8 - -num9;
+console.log(resultSum);  //180
+
+16.
+const resSign = !+[] + [] + ![];
+
+console.log(resSign);  // truefalse
+
+Sol-// firstStep  = ! + '"' + ''" + !true
+// secondStep = ! + '"' + ''" + false
+// thirdStep = ! + 0 + 0 + false
+// fourthStep = !0 +false
+// fifthStep = !false +false
+// sixthStep = truefalse
+
+
+17.
+let randomValue = { name: "Lydia" };
+randomValue = 23;
+if (!typeof randomValue === "string") {
+  console.log("not a string");
+} else {
+  console.log("its a string");
+}
+
+OUTPUT- its a string ; because typeof randomValue return 'number' in string format and opposite of any data will be false; so comparison will be like (false===string) which is false.
+
+19.
+const fruit = ["banana", "orange", "apple"];
+
+fruit.slice(0, 1);
+console.log("PROBLEM-59-1", fruit);  //  ["banana", "orange", "apple"] because .slice is used to return part of data only.
+
+fruit.splice(0, 1);
+console.log("PROBLEM-59-2", fruit); //["orange", "apple"] splice will remove 1st element.
+
+fruit.unshift("kiwi");
+console.log("PROBLEM-59-3", fruit);  // ["kiwi", "orange", "apple"] unshift will add kiwi in 1st place
+
+20.
+let count = 0;
+const numbers1 = [0, 1, 2, 3];
+numbers1.forEach((num) => {
+  if (num) {
+    count += 1;
+  }
+});
+
+console.log(count);  // return 3 because 0 is always considerd as false value.
+
+21.// MAKE SOME CHANGES IN MAGIC_OBJ SO THAT I WILL GET 'THIS IS AMAZING IN CONSOLE'
+const magicObj = {
+  //   flag: 1,
+//   get value() {
+//     return this.flag++;
+//   },
+};
+
+if (magicObj.value === 1 && magicObj.value === 2 && magicObj.value === 3) {
+  console.log("This is amazing");
+}
+
+22.
+function Superhero() {
+  this.hero = "Iron man";
+  return { hero: "captain america" };
+}
+
+const hero = new Superhero();
+console.log(hero);  // {hero: "captain america"}
+
+23.
+function showArg() {
+
+  console.log(arguments[0]);  //21
+  console.log(arguments.length);  // 2
+
+  for (let x of arguments) {
+    console.log("x:", x);  //21 and JS
+  }
+  console.log(Array.isArray(arguments)); //false
+  }
+showArg(21, "JS");
+
+24. 
+// FIND THE TIME TAKEN BY WHILE LOOP
+
+let i = 0;
+const beforeTime = new Date().getTime();
+while (i < 1000000000) {
+  i++;
+}
+const afterTime = new Date().getTime();
+console.log("TimeTaken:", afterTime - beforeTime); // in Millisecond
+
+25.
+let arr = [1, [2, [3, [4, 5], 6], 7, 8], 9, 10]
+console.log(arr.flat(Infinity));
+
+OUTPUT-[1,2,3,4,5,6,7,8,9,10]
+
+26.// STRING BASED QUESTION
+let str="Hello How are you"
+//A. conevert string into array
+let b=str.split();
+// or let b=[str]
+console.log(b)
+
+//B. conevert each character string into array
+let b=[...str]
+//or let b=str.split("")
+
+//C.  conevert string(based on space or any sequence) into array
+let b=str.split(" ")
+
+//D. replace the character from string
+let b=str.replaceAll("H","");
+// or let b=str.replace(/H/g,"");  ?? here/g will represent global in string
+
+//E. get substring from string (note substring() will take 2 val,1start,1end
+let b=str.substring("5","9");
+output- how (substring print the values of inbetween)
+
+//F. remove the first character only from string
+let b=str.substring(1,str.lentgh);
+
+//G. remove the last character only
+let b=str.substring(0,str.length-1);
+
+//H. split or get string before specific character
+let b=str.split("o")[0];
+
+//J. reverse the string
+let b=str.split("").reverse().join("");
+
+//J. remove space from str 
+let str="    HELLO    "
+let b=str.trim();
+
+// I2.  INPUT --> hey max how are you
+//OUTPUT--> Hey Max How Are You
+
+function captialStr(str){
+    let newStr=""
+
+    let arrStr= str.split(" ")     //? ['hey', 'max', 'how', 'are', 'you']
+    for(let data of arrStr){
+        let a=data.slice(0,1).toUpperCase() + data.slice(1,data.length)      //? Hey Max..
+        newStr = newStr + a + " "
+    }
+    console.log(newStr)
+}
+captialStr("hey max how are you")
+
+26.// EVALAUTE THE OUPUT
+let a=[]
+let b=[]
+console.log(a==b); //? o/p= false //? it will comapare memory address
+console.log(a===b); //? o/p= false;
+
+27.let a=[]
+let b=a;
+console.log(a===b); //? op=true because here memory address will be same
+console.log(a===b); //? op=true
+
+28.let a=[20]
+let b=[20];
+console.log(a==b) //? op=false ;it will compare value with memory address
+console.log(a[0]==b[0]) //? true ;it will check value 
+console.log(a[0]===b[0]) //? true
+
+29.let z=[1,2,3];
+let a={name:"vikas"}
+console.log(...z) //? op= 1 2 3; spread opeartor will spread or destructure the values.
+
+30.console.log(typeof NaN); //? op= number
+
+31.let a= 10 - - 10
+let b= 10 - - - 10
+console.log(a) //? op=20
+console.log(b) //? op=0
+
+32.const abc= new Set([1,2,3,4,4,"c","c"]);
+console.log(abc) //? op= {1, 2, 3, 4, 'c'} ;new set will always return unique values from array and op will be in form of object.
+
+33. let data={name:"vikas"}
+console.log(delete data.name) //? op= true; because delete operation will return boolean
+console.log(data) //op= {} empty object;
+
+34.let data={name:"vikas"}
+ console.log(delete data) ; //? op=false; we cant delete a literal
+console.log(data); //? op={name:"vikas"}
+
+35.let data=["akas","vikas","sonu"];
+let [,y]=data;
+ console.log(y); //? op=vikas
+
+36.let data=["akas","vikas","sonu"];
+let [y]=data;
+ console.log(y); //? op=akas
+
+37. how to get age without using . operator in objects
+let data={name:"vikas",age:25,skill:"mern"}
+let {age}=data;
+console.log(age); //? op=25; this is called as destructure
+
+38.// merge 2 objects
+lt obj1={name:"vikas",roll:21};
+let obj2={class:"metrix",sec:"A"};
+let obj3={...obj1,...obj2};
+console.log(obj3) //? op= {name: 'vikas', roll: 21, class: 'metrix', sec: 'A'}
+
+39.let obj1={name:"vikas",roll:21};
+let obj2={city:"bangalore"};
+let obj3={obj1,...obj2};
+console.log(obj3) //? op={ {name:"vikas",roll:21}, city: 'bangalore' }
+
+40.let obj1={name:"vikas",roll:21};
+let obj2={name:"akas",roll:8};
+let obj3={...obj1,...obj2};
+console.log(obj3) //? op= {name: 'akas', roll: 8}; bcoz it will update the value of key as key cant be duplicate in js object.
+
+41. console.log(Promise.resolve(5))
+//op= Promise where promise state will be fulfilled with a promise result of 5.
+
+42.console.log("😅" ==="😅") //? op= true; bcoz it will compare emoji value UTF code
+
+43. JSON.parse() will convert JSON string into JavaScript object.
+
+let jsonObj='{"name":"John", "age":30, "city":"New York"}'
+const obj = JSON.parse(jsonObj);
+console.log(obj) //? op={name: 'John', age: 30, city: 'New York'}
+
+44.let name="vikas"
+function getName(){
+ console.log(name)
+ let name="akas"
+}
+getName()
+
+//? op=ReferenceError: Cannot access 'name' before initialization
+
+B. let name="vikas"
+function getName(){
+ console.log(name)
+ var name="akas"
+}
+getName()
+
+//? op= undefind ; hoisting concept
+
+C. var name="vikas"
+function getName(){
+ console.log(name)
+ let name="akas"
+}
+getName()
+//? op= SyntaxError: Identifier 'name' has already been declared
+
+45.
+function getName(){
+  var name="akas"
+ console.log(name)
+
+}
+getName()
+
+//? op=akas
+
+46.let name="vikas"
+console.log(!typeof name ==="object"); //?op=false ; comparison will be like false==="object"
+console.log(!typeof name ==="string"); //?op=false ; comparison will be like false==="string"
+console.log(!typeof name ===false);   //? op=true
+console.log(typeof name ==="string"); //? op=true
+explaination-->  console.log(typeof name) will give string
+explaination--> console.log(!typeof name) will give false
+
+47.let name="vikas"
+let age=21
+
+console.log(isNaN(name)) //? op=true
+console.log(isNaN(age))   //? op=false
+
+48.let arr=[1,2,3,4,5]
+ let b=arr.pop()  //? remove element from last
+let c=arr.shift()  //? remove element from start
+console.log(arr) //? op = [2, 3, 4]
+
+49.// covert string false to boolean
+let data="false"
+console.log(!data) //? op= false ;check ques 46 for explaination
+
+50.// covert string true to boolean
+let data="true"
+console.log(!!data); //? op=true
+
+51.let data=[1,2,3,4]
+delete data[0]
+console.log(data) //? op=[ ,2,3,4] ;bcoz delete will create empty space which will not take any memory
+console.log(data.length) //? 4 ;bcoz length wont get change
+
+52.// merge 2 array
+let arr1=[1,2,3,4,4]
+let arr2=[4,5,6,7]
+let arr3=[...arr1,...arr2];
+console.log(arr3)
+
+53. let a=2
+setTimeOut(()=>{
+console.log(a)
+,0}
+a=100;
+//? op=100 because timer function executes in the last.
+
+54. let a=1;
+ let A=2;
+console.log(A) //? op=2; bcoz js will consider both a as different
+
+55. let 10A=20
+console.log(10A); //?op=Syntax error; bcoz we cant define variable with number/special character as start
+
+56. let A10=20
+console.log(A10); //?op=20
+
+57. let a="like"
+let b=`like`
+console.log(a===b) //? op=true
+
+58. let a=1;
+ let b=2;
+console.log(--b === a) //? op=true
+
+59.let a=1;
+let b=1;
+let c=1;
+console.log(a=== b ===c); //? op=false
+
+60.let a=1;
+let b=1;
+let c=2;
+console.log(a===b===--c); //? op=false;
+
+61. console.log(3*3);  //? op=9;
+console.log(3**3);    //? op=27;
+console.log(3***3);  //? op=Syntax Error; unexpected token '*'
+
+62.console.log(a) //? op=undefined ; undefine means variable is defined but havn't given any value.
+var a;
+
+63.console.log(b) //? op=Refrence Err; b is not defined
+
+64. console.log([[[[]]]]);  //? op= nested array i.e [Array(1)] total 3 arrays
+
+65. how to find os with js
+ans-> navigator.platform
+
+66.function fruit(){
+    console.log(name); //? op=undeifined
+    console.log(price); //? op=ReferenceError: Cannot access 'price' before initialization
+    var name="apple"
+    let price=5
+}
+fruit()
+
+67.for(var i=0; i<3;i++){
+    setTimeout(()=> console.log(i)) 
+}
+//? op= 3 (runs for 3 time); becoz of event loop
+
+68. console.log(+true) //? op=1, plus oprator will convert true into 1.
+  console.log(typeof +true) //? op= number.
+ console.log(!"vikas") //? op=false
+console.log(typeof("vikas")) //? op=string
+
+69.let data= "size"
+const bird={
+    size:"small"
+}
+console.log(bird[data]) // op=small; bcoz data will get assigned to object when using array notation. ie. bird["size"] which is small
+console.log(bird["size"]) //op=small
+console.log(bird.size) // op=small
+console.log(bird.data) // op=undined as this key is not defined
+
+70. let c={name:"peter"}
+let d;
+d=c;
+c.name="vikas"
+console.log(d.name); // op=vikas; bcoz non-primitve data types are object refrencing.
+
+71. var x;
+let x=10;
+console.log(x) // op=SyntaxError: Identifier 'x' has already been declared
+
+72.let a=3
+let b= new Number(3);
+console.log(a==b) // op=true
+console.log(a===b) // op=false
+console.log(typeof b,b) // op= object,{3}
+
+73.function fruit(){
+    console.log("woo")  //op=woo
+}
+fruit.name="vikas"
+fruit();
+
+74.let number=0
+console.log(number++) // op=0 ; but now number will be 1 
+console.log(++number) // op=2 ; bcoz it will increase number by 1 i.e 1+1=2
+console.log(number) // op=2
+
+75. function getAge(...args){
+  console.log(typeof args);  // op=object
+    console.log(args) // op=[25]
+}
+getAge(25)
+
+76.function sum(a,b){
+  return a+b;
+}
+console.log(sum(1,"2")); //op=12 ;bcoz it will take b as string and return string.
+
+B.function sum(a,b){
+  return a+b;
+}
+console.log(sum("1",2)); //op=12 ;bcoz it will take a as string and return string.
+
+77.const value= eval("10*10+5");
+console.log(value) // op= 105 (type will number); bcoz eval will take expression and always reuturn type as number
+
+B.const value= eval(10+"10");
+console.log(value)   // op=1010 (type number)
+
+C.const value= eval(10*"10");
+console.log(value)   // op=100 (type number)
+
+D.C.const value= eval(10*10);
+console.log(value)   // op=100 (type number)
+
+78.let obj ={1:"a",2:"b"}
+console.log(obj.hasOwnProperty("1")); // op=true
+console.log(obj.hasOwnProperty(1)); // op=true ; we can search by both ways if key is number just key name should be valid
+
+79.let obj ={a:"one",b:"two",a:"three"}
+console.log(obj); // op= {a: 'three', b: 'two'} ; if key will become same in that case it will take the updated value
+console.log(obj["a"]); // op= three ; will show the updated value
+
+80. let foo=()=> console.log("first")
+let boo=()=> setTimeout(()=> console.log("second"),0)
+let doo=()=> console.log("third")
+
+boo();   // third , first, second ; bcoz of event loop concept
+doo();
+foo();
+
+81.const person ={name:"vikas"};
+function sayHi(age){
+  return `${this.name} is ${age}`;
+}
+let one= sayHi.call(person,21);
+let two= sayHi.bind(person,22);
+let three= sayHi.bind(person,23)();
+
+console.log(one) // op= vikas is 21 ; bcoz in this person will refer to name and age we are passing
+console.log(two) // op= function    i.e ƒ sayHi(age){return `${this.name} is ${age}`;} because bind will only bind the function so we need to call it separatly
+console.log(three) //// op= vikas is 23 ; bcoz we are calling it separatly
+
+82. function sayHi(){
+}
+console.log(typeof sayHi) // op= function
+console.log(typeof sayHi()) //op= undefined ;bcoz function return value is not defined
+
+B.function sayHi(){
+  return 1;
+}
+console.log(typeof sayHi) // op=function
+console.log(typeof sayHi()) // op=number
+
+C.function sayHi(){
+  return ()=>0;
+}
+console.log(typeof sayHi()) // op=function
+console.log(typeof sayHi()()) // op=number ; because we are calling here internal arrow function.
+
+D.function sayHi(){
+  return (()=>0)();
+}
+console.log(typeof sayHi) // op= function
+console.log(typeof sayHi()) // op= number; bcoz arrow function is called internally
+console.log(typeof sayHi()())  // op= Type Error ; sayHi(...) is not a function
+
+83. console.log(typeof typeof 1) 
+//op= string ; bcoz first typeof will return "number" whose type will be string.
+
+84.let arr=[1,2,3]
+arr[6]=11
+console.log(arr) // op=[1, 2, 3, empty × 3, 11]
+
+85. console.log(!!null) //false
+console.log(!"") // true
+console.log(!!"") //false
+console.log(!!1) //true
+
+
+86. console.log([..."vikas"]) // op= ['v', 'i', 'k', 'a', 's']
+
+87.let person={name:"vikas"}
+let member=[person]
+person=null;
+console.log(member) // op=[{name:"vikas"}]; bcoz member have different memory allocation.
+
+88.let data=2+4+"1"
+console.log(data,typeof data) // op=61 string
+
+console.log(typeof 2 + 4+"1") // op= number41 ;bcoz typeof 2 will return no.
+
+console.log(typeof (2 + 4 + + "1")) // op= number ; bcoz if we will put plus sign before string while doing addition, then it will convert string into number
+
+89. let data = [1,2,3].map(num =>{
+    if(typeof num ==="number") return "hi";
+    return num*2;
+})
+console.log(data) // op=['hi', 'hi', 'hi'];
+
+B.let data = [1,2,3].map(num =>{
+    if(typeof num ==="number") return;
+    return num*2;
+})
+console.log(data) // op=[undefined,undefined,undefined]
+
+90.function getName(member){
+    member.name = "akas"
+}
+let person = {name:"vikas"}
+getName(person);
+
+console.log(person) // op= {name: 'akas'} ; because of object refrencing i.e call by refrence
+
+91. function getCar(){
+    this.car = "kia";
+    return {car:"tata"}
+}
+let myCar = new getCar()
+console.log(myCar.car)  // op=tata
+
+B. function getCar(){
+    this.car = "kia";
+}
+let myCar = new getCar()
+console.log(myCar.car)  // op=kia
+
+92.(()=>{
+    let x= (y =10)
+})()
+console.log(typeof x) // op= undifined ; bcoz x is functional scope.
+console.log(x)  // op= ReferenceError: x is not defined
+
+B. (()=>{
+    let x= y =10
+})()
+console.log(typeof y) // op= number ; bcoz here variable y will behave has var
+console.log(y) // op=10 
+
+C. let y=100;
+(()=>{
+    var y =10
+})()
+console.log(typeof y) // op=number
+console.log(y) // op=100
+
+D.
+C. let y=100;
+(()=>{
+    y =10
+})()
+console.log(typeof y) // op=number
+console.log(y) // op=10
+
+93. console.log(!true - true) // op= -1; because true =1, false=0
+
+console.log(true +  + "10") // op=11 ;and type will be number
+ 
+94. check if any student is fail
+// some() method returns TRUE if any condition is satisfied in return statement
+// every() method returns TRUE if all condition is satisfied in return statement
+ let arr=[{makrs:90},{makrs:10},{makrs:35}];
+let passingMarks=33;
+let result= arr.some((data) => { return data.makrs < passingMarks })
+
+console.log(result)
+
+95.  // find() method returns the value of the first element in an array that passes.
+ let arr=[{makrs:90},{makrs:10},{makrs:35},{makrs:31}];
+let passingMarks=33;
+let result= arr.find((data) => {  return data.makrs < passingMarks});
+
+console.log(result);
+
+96.let obj = Object.create(null); // {}
+let keyToCheck ="randomKey"
+if(obj.hasOwnProperty(keyToCheck)){
+    console.log("key found")
+}else{
+    console.log("key not found")
+}
+
+op=TypeError: obj.hasOwnProperty is not a function ; because we can't apply hasOwnProperty on empty obj. here we can use hasOwn() property
+
+let obj = Object.create(null);
+let keyToCheck ="randomKey"
+if(Object.hasOwn(obj,keyToCheck)){
+    console.log("key found")
+}else{
+    console.log("key not found")
+}
+// op=key not found ; Object.hasOwn(obj,keyToCheck) accepts two para one the object another one key/proerty name
+
+97. let a = 100["toString"].length +1;
+console.log(a) // 2;  bcoz toString(radix) method use radix sytem to decide which number system to use. and function. length return the length/number of parameter
+ // 100["toString"].length returns 1;
+
+98. let arr=[{makrs:90},{makrs:10},{makrs:35},{makrs:31},{makrs:45},];
+let passingMarks=33;
+let result= arr.find((data) => {  return data.makrs > passingMarks});
+console.log(result) 
+// op= {makrs: 90} ; because find will always return the first value
+
+99.  let arr=[{makrs:90},{makrs:10},{makrs:35},{makrs:31},{makrs:45},];
+let passingMarks=33;
+let result= arr.filter((data) => {  return data.makrs > passingMarks});
+console.log(result)
+// op= [{makrs: 90},{makrs: 35},{makrs: 45}] ; bcoz filter will return all the values
+
+100. call obj.show function without using()
+// 3 ways we can do
+
+ const obj = {
+       show : function(){
+       console.log("js");
+ }
+}
+// 1. obj.show``
+// 2. new obj.show
+
+// 3.
+ const obj = {
+     get  show(){
+       console.log("js");
+ }
+}
+obj.show
+
+101. 
+if(function fn() {}){
+ console.log(fn())
+}
+// op = ReferenceError: fn is not defined ; boz in js once if block is executed, whatever expression we have written inside if block get stored in garbage collection.
+
+
+ADVANCED QUESTIONS :
+✅ Q1
+javascript
+Copy
+Edit
+var x = 10;
+
+function test() {
+  var x = 20;
+  console.log(x);
+}
+
+test();
+console.log(x);
+Output:
+
+Copy
+Edit
+20
+10
+Explanation:
+Inside test, a new local variable x is declared (var x = 20). It shadows the global x. So console.log(x) inside test() logs 20.
+Outside the function, the global x is untouched, hence console.log(x) logs 10.
+
+✅ Q2
+javascript
+Copy
+Edit
+var a = 5;
+
+function foo() {
+  a = 10;
+  return;
+  function a() {}
+}
+
+foo();
+console.log(a);
+Output:
+
+Copy
+Edit
+5
+Explanation:
+Due to hoisting, the function a() inside foo is hoisted to the top of its scope, so the assignment a = 10 modifies the local a (function, not the global variable).
+Thus, global a remains 5.
+
+✅ Q3
+javascript
+Copy
+Edit
+var count = 1;
+
+function increment() {
+  count += 1;
+  console.log(count);
+}
+
+function test() {
+  var count = 10;
+  increment();
+}
+
+test();
+Output:
+
+Copy
+Edit
+2
+Explanation:
+increment() accesses the global count, since it has no local count. Global count = 1, so count += 1 makes it 2.
+The var count = 10 inside test() is unrelated to what increment() accesses.
+
+✅ Q4
+javascript
+Copy
+Edit
+function outer() {
+  var a = 10;
+
+  function inner() {
+    console.log(a);
+    var a = 20;
+  }
+
+  inner();
+}
+
+outer();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+Explanation:
+Inside inner(), var a is hoisted and declared at the top of inner, but not assigned yet. So console.log(a) logs undefined due to temporal dead zone caused by the local a.
+
+✅ Q5
+javascript
+Copy
+Edit
+let x = 1;
+
+function foo() {
+  console.log(x);
+  let x = 2;
+}
+
+foo();
+Output:
+
+pgsql
+Copy
+Edit
+ReferenceError: Cannot access 'x' before initialization
+Explanation:
+let x = 2 is hoisted but not initialized. Accessing x before its declaration results in a ReferenceError due to TDZ (Temporal Dead Zone).
+
+✅ Q6
+javascript
+Copy
+Edit
+var x = 21;
+
+var fun = function () {
+  console.log(x);
+  var x = 20;
+};
+
+fun();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+Explanation:
+Due to hoisting, inside fun, var x is hoisted and initialized to undefined before any code runs. So console.log(x) sees undefined.
+
+✅ Q7
+javascript
+Copy
+Edit
+let a = 10;
+
+function test() {
+  a = 20;
+  let a;
+  console.log(a);
+}
+
+test();
+Output:
+
+pgsql
+Copy
+Edit
+ReferenceError: Cannot access 'a' before initialization
+Explanation:
+Inside test, let a; is hoisted but not initialized, creating a TDZ. Assigning a = 20 before declaration triggers a ReferenceError.
+
+✅ Q8
+javascript
+Copy
+Edit
+var x = 5;
+
+function test() {
+  console.log(x);
+  if (true) {
+    var x = 10;
+  }
+  console.log(x);
+}
+
+test();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+10
+Explanation:
+var x is hoisted to the top of test() and initialized to undefined. So the first console.log(x) logs undefined. After assignment, it logs 10.
+
+✅ Q9
+javascript
+Copy
+Edit
+let a = 100;
+
+function modify() {
+  a += 50;
+  console.log(a);
+}
+
+modify();
+Output:
+
+pgsql
+Copy
+Edit
+ReferenceError: Cannot access 'a' before initialization
+BUT this is a bit tricky.
+If this code is copy-pasted exactly, you can get:
+
+Copy
+Edit
+150
+Why the difference?
+If a is declared globally (let a = 100) and accessible in modify, and there's no local shadowing, it'll log 150.
+
+Only if there's a let a; inside modify() would you get the ReferenceError.
+
+✅ Q10
+javascript
+Copy
+Edit
+var x = 5;
+
+function a() {
+  console.log(x);
+}
+
+function b() {
+  var x = 10;
+  a();
+}
+
+b();
+Output:
+
+Copy
+Edit
+5
+Explanation:
+Function a() is defined in the global scope, so it closes over x = 5 (global x).
+The local x = 10 inside b() is irrelevant to a().
+
+
+Q11
+Code:
+
+javascript
+Copy
+Edit
+var a = 1;
+
+function outer() {
+  var a = 2;
+  function inner() {
+    console.log(a);
+  }
+  return inner;
+}
+
+var fn = outer();
+fn();
+Output:
+
+Copy
+Edit
+2
+Explanation:
+The inner() function closes over the outer() scope and has access to a = 2, which shadows the global a = 1.
+
+Q12
+Code:
+
+javascript
+Copy
+Edit
+function foo() {
+  console.log(bar);
+  var bar = "Hello";
+}
+
+foo();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+Explanation:
+The variable bar is hoisted to the top of the foo() function's scope but not initialized. So console.log(bar) prints undefined.
+
+Q13
+Code:
+
+javascript
+Copy
+Edit
+function foo() {
+  bar = "I'm global!";
+}
+
+foo();
+console.log(bar);
+Output:
+
+rust
+Copy
+Edit
+I'm global!
+Explanation:
+Because bar is not declared using var, let, or const, it becomes a global variable implicitly.
+
+Q14
+Code:
+
+javascript
+Copy
+Edit
+(function () {
+  var x = y = 10;
+})();
+
+console.log(typeof x);
+console.log(typeof y);
+Output:
+
+typescript
+Copy
+Edit
+undefined
+number
+Explanation:
+y = 10 creates a global variable because it's not declared with var, let, or const. x is var scoped inside the IIFE, so it's not accessible globally.
+
+Q15
+Code:
+
+javascript
+Copy
+Edit
+let x = 10;
+
+if (true) {
+  let x = 20;
+  console.log(x);
+}
+
+console.log(x);
+Output:
+
+Copy
+Edit
+20
+10
+Explanation:
+let x = 20 is block scoped and does not affect the outer x.
+
+Q16
+Code:
+
+javascript
+Copy
+Edit
+var x = 1;
+
+function foo() {
+  console.log(x);
+  var x = 2;
+}
+
+foo();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+Explanation:
+x is hoisted inside the function and initialized to undefined before the console.log.
+
+Q17
+Code:
+
+javascript
+Copy
+Edit
+var a = 100;
+
+function test() {
+  if (false) {
+    var a = 200;
+  }
+  console.log(a);
+}
+
+test();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+Explanation:
+The variable a inside test() is hoisted, so console.log(a) sees it as undefined, despite the condition being false.
+
+Q18
+Code:
+
+javascript
+Copy
+Edit
+let a = 5;
+
+function test() {
+  console.log(a);
+  let a = 10;
+}
+
+test();
+Output:
+
+javascript
+Copy
+Edit
+ReferenceError
+Explanation:
+The let variable a is in the temporal dead zone (TDZ) before it's initialized, hence accessing it throws a ReferenceError.
+
+Q19
+Code:
+
+javascript
+Copy
+Edit
+(function () {
+  var foo = 1;
+  function bar() {
+    console.log(foo);
+    var foo = 2;
+  }
+  bar();
+})();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+Explanation:
+Inside bar(), var foo is hoisted and shadows the outer foo, but it's undefined at the time of the console.log.
+
+Q20
+Code:
+
+javascript
+Copy
+Edit
+var a = 1;
+
+function modify() {
+  a += 1;
+  function a() {}
+  console.log(a);
+}
+
+modify();
+Output:
+
+csharp
+Copy
+Edit
+[Function: a]
+Explanation:
+Function declarations are hoisted and a is treated as a local function, shadowing the global a.
+
+Q21
+Code:
+
+javascript
+Copy
+Edit
+var x = 5;
+
+function test() {
+  console.log(x);
+  var x = 10;
+}
+
+test();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+Explanation:
+x inside the function is hoisted and shadowed, so console.log(x) prints undefined.
+
+Q22
+Code:
+
+javascript
+Copy
+Edit
+let a = 1;
+
+function print() {
+  if (a === 1) {
+    let a = 2;
+    console.log(a);
+  }
+}
+
+print();
+Output:
+
+Copy
+Edit
+2
+Explanation:
+The let a = 2 inside the if block shadows the outer a.
+
+Q23
+Code:
+
+javascript
+Copy
+Edit
+function test() {
+  console.log(typeof a);
+  console.log(typeof b);
+  var a = 5;
+  let b = 10;
+}
+
+test();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+ReferenceError
+Explanation:
+a is hoisted and initialized as undefined. b is in the TDZ, so typeof b throws a ReferenceError.
+
+Q24
+Code:
+
+javascript
+Copy
+Edit
+var a = 1;
+
+function foo() {
+  a = 2;
+  return;
+  function a() {}
+}
+
+foo();
+console.log(a);
+Output:
+
+Copy
+Edit
+1
+Explanation:
+The function a() declaration inside foo() is hoisted, so the assignment a = 2 updates the local a, not the global one.
+
+Q25
+Code:
+
+javascript
+Copy
+Edit
+let x = 10;
+
+function outer() {
+  let x = 20;
+  function inner() {
+    console.log(x);
+  }
+  return inner;
+}
+
+let fn = outer();
+fn();
+Output:
+
+Copy
+Edit
+20
+Explanation:
+inner() forms a closure and retains access to the x = 20 in outer().
+
+Q26
+Code:
+
+javascript
+Copy
+Edit
+function sayHi() {
+  console.log(name);
+  console.log(age);
+  var name = 'Vikas';
+  let age = 25;
+}
+
+sayHi();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+ReferenceError
+Explanation:
+name is hoisted and set to undefined. age is in TDZ because it's declared with let.
+
+Q27
+Code:
+
+javascript
+Copy
+Edit
+{
+  let x = 10;
+  {
+    console.log(x);
+    let x = 20;
+  }
+}
+Output:
+
+javascript
+Copy
+Edit
+ReferenceError
+Explanation:
+The inner let x = 20 causes a TDZ before its declaration, so console.log(x) throws an error.
+
+Q28
+Code:
+
+javascript
+Copy
+Edit
+let count = 0;
+
+(function () {
+  if (count === 0) {
+    let count = 1;
+    console.log(count);
+  }
+  console.log(count);
+})();
+Output:
+
+Copy
+Edit
+1
+0
+Explanation:
+Inside the if block, count = 1 is block scoped. The outer count = 0 is still accessible outside the block.
+
+Q29
+Code:
+
+javascript
+Copy
+Edit
+function example() {
+  console.log(a);
+  var a = 10;
+  console.log(a);
+}
+
+example();
+Output:
+
+javascript
+Copy
+Edit
+undefined
+10
+Explanation:a is hoisted and initialized to undefined. Then it is set to 10.
+
+Q30
+
+const a = 1;
+
+(function () {
+  console.log(a);
+  const a = 2;
+})();
+
+Output: ReferenceError
+Explanation:
+const a = 2 is in the TDZ until initialized, so accessing it beforehand throws a ReferenceError.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

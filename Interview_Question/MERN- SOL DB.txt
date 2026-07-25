@@ -1,0 +1,431 @@
+| Topic                      | One-line answer                                                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Indexes**                | Speed up queries using B-Tree, but increase write cost and storage.                                                        |
+| **Aggregation**            | MongoDB pipeline for filtering, grouping, sorting, joining, and computing results.                                         |
+| **populate()**             | Mongoose feature that fetches referenced documents, similar to a JOIN.                                                     |
+| **Transactions**           | Ensure multiple operations either all succeed or all fail (atomicity).                                                     |
+| **Embedding**              | Store related data inside one document for fast reads.                                                                     |
+| **Referencing**            | Store IDs to related documents when data is large or shared.                                                               |
+| **SQL Performance Tuning** | Improve query speed using indexes, efficient queries, pagination, and execution plan analysis.                             |
+| **Temporary Tables**       | Store intermediate query results within a session for complex reporting or repeated use.                                   |
+| **Query Optimization**     | Reduce query cost by selecting only needed data, indexing properly, avoiding unnecessary scans/joins, and using `EXPLAIN`. |
+
+1.Difference between Sql and NoSQL
+2.Difference Primary key and foreign key
+3.Find the 2nd max age from table
+
+SELECT MAX(age)
+FROM Customers
+WHERE age < (SELECT MAX(age) FROM Customers);
+
+OR 
+
+SELECT DISTINCT age
+FROM Customers
+ORDER BY age DESC
+LIMIT 1 OFFSET 1 ;
+
+Ques : Use Embedding when relationship is One to One or one to few (like user address in user table).
+Since Data is small. it will Always fetched together.
+
+Use Referencing when Relationship One to Many or Many to Many (like product details id in order table).
+"Products can appear in thousands of orders. If we embed the complete product information inside every order, data gets duplicated and becomes difficult to maintain. Instead, I store the product's ObjectId in the order document and fetch the details when required."
+
+Ques : When do you use transactions?
+
+A transaction ensures multiple database operations are treated as a single unit. Either all succeed, or all are rolled back.
+
+
+Examples: Banking, Order + Payment, Inventory deduction
+
+How do MongoDB transactions work?
+
+"MongoDB transactions use sessions. I first create a session using mongoose.startSession(), then start the transaction. Every database operation is executed within that session. If all operations succeed, I call commitTransaction(). If any operation fails, I call abortTransaction(), which rolls back all the changes made during that transaction."
+
+const session = await mongoose.startSession();
+
+session.startTransaction();
+
+...
+
+await session.commitTransaction();
+
+or
+
+await session.abortTransaction();
+
+eg :
+const mongoose = require("mongoose");
+
+async function placeOrder(productId, userId) {
+
+    // Create session
+    const session = await mongoose.startSession();
+
+    try {
+
+        // Start transaction
+        session.startTransaction();
+
+        // Find product
+        const product = await Product.findById(productId).session(session);
+
+        if (!product) {
+            throw new Error("Product not found");
+        }
+
+        if (product.stock <= 0) {
+            throw new Error("Out of stock");
+        }
+
+        // Create order
+        await Order.create([
+            {
+                user: userId,
+                product: productId,
+                quantity: 1
+            }
+        ], { session });
+
+        // Reduce stock
+        product.stock--;
+
+        await product.save({ session });
+
+        // Save everything
+        await session.commitTransaction();
+
+        console.log("Order placed successfully");
+
+    } catch (err) {
+
+        // Undo all changes
+        await session.abortTransaction();
+
+        console.log(err.message);
+
+    } finally {
+
+        session.endSession();
+    }
+}
+
+QUES 4.Indexing in database
+✅ ANS :Without indexing we do Collection/db Scan which has TC O(n). with indexing search become O(lon n) as it uses hashTree.
+
+Indexing is just like creating a "search shortcut" to help speed up data retrieval. Without indexes, databases must scan every document or row — making queries slow as data grows.
+Definition:
+An index is a data structure (usually a B-Tree or Hash) that stores a small subset of the data to allow fast lookups based on specific fields.
+
+example : Imagine a book without an index — to find “React,” you’d scan every page. With an index, you jump directly to the right page.z
+
+INDEXING IN MONGODB :
+🔹 Default Index:
+Every MongoDB collection automatically creates an index on the _id field.
+ Types of Indexes:
+
+| Type             | Syntax Example                                   | Use Case                          |
+| ---------------- | ------------------------------------------------ | --------------------------------- |
+| Single Field     | `{ name: 1 }`                                    | Simple filtering                  |
+| Compound Index   | `{ name: 1, age: -1 }`                           | Queries using both fields         |
+| Unique Index     | `{ email: 1 }, { unique: true }`                 | Prevent duplicates                |
+| Text Index       | `{ description: "text" }`                        | Full-text search                  |
+| TTL Index        | `{ createdAt: 1 }, { expireAfterSeconds: 3600 }` | Auto-delete old docs              |
+| Geospatial Index | `{ location: "2dsphere" }`                       | Queries involving geo coordinates |
+
+SYNTAX :
+db.collection.createIndex({ fieldName: 1 })  // 1 for ascending, -1 for descending
+
+eg. 
+db.users.createIndex({ name: 1 }) // This creates an ascending index on the name field in the users collection.
+db.users.find({ name: "Vikas" }) // MongoDB automatically uses the name index if available.
+db.users.find({ name: "Vikas" }).explain("executionStats") // Check Which Index Is Being Used
+db.users.getIndexes()  // To View All Indexes
+❌ Drop an Index : 
+db.users.dropIndex("name_1")  // Use name from getIndexes()
+
+
+
+🛠 Indexing in MySQL:
+🔹 Default:
+Primary keys and unique constraints create indexes automatically.
+🔹 Types of Indexes:
+
+| Index Type        | Syntax Example                                         | Description                                  |
+| ----------------- | ------------------------------------------------------ | -------------------------------------------- |
+| **Regular Index** | `CREATE INDEX idx_col ON table(col);`                  | Speeds up searches                           |
+| **UNIQUE**        | `CREATE UNIQUE INDEX idx_email ON users(email);`       | Prevents duplicate values                    |
+| **PRIMARY KEY**   | `PRIMARY KEY (id)`                                     | Unique, auto-created on primary key fields   |
+| **FULLTEXT**      | `CREATE FULLTEXT INDEX idx_text ON articles(content);` | For full-text search (only in MyISAM/InnoDB) |
+| **Composite**     | `CREATE INDEX idx_multi ON users(name, age);`          | Index on multiple columns                    |
+
+SYNTAX :
+CREATE INDEX index_name ON table_name (column_name);
+eg. 
+CREATE INDEX idx_username ON users (username); // This creates a non-unique index on the username column of the users table.
+SELECT * FROM users WHERE username = 'vikas'; // MySql automatically uses the name index if available-instead of scanning the whole table..
+EXPLAIN SELECT * FROM users WHERE username = 'vikas'; // Check the key column in the result: If it shows your index (idx_username), it's being used.
+                                                      // If NULL, MySQL isn’t using any index (which means a full table scan).
+
+SHOW INDEXES FROM users; // To View All Indexes on a Table
+❌ Drop an Index : 
+DROP INDEX idx_username ON users;
+
+
+Use when:
+Large collections
+Fields used in .find(), .sort(), .aggregate(), .update()
+Filtering, sorting, and joining (via $lookup) fields
+
+Q: Why not create indexes on every field?
+Indexes improve read performance but:
+consume memory
+increase storage
+slow inserts/updates/deletes because indexes must also be updated.
+
+CONS : 
+Too many indexes = slower inserts/updates
+Large indexes consume more memory/disk
+
+
+QUES 5.How you will achieve joins in MongoDb
+✅ ANS :Using aggregate with lookup, or we can use populate in mongoose
+
+Assume a users collection with _id matching orders.userId:
+db.orders.aggregate([
+  {
+    $lookup: {
+      from: "users",          // The collection to join
+      localField: "userId",   // Field in the order document
+      foreignField: "_id",    // Field in the users document
+      as: "user_details"      // Output array field
+    }
+  }
+]);
+
+// populate : It fetches referenced documents automatically.
+// Approach 1: Using findById (Recommended for IDs)
+await db.order.findById(1).populate("userId");
+
+// Approach 2: Using findOne
+await db.order.findOne({ _id: 1 }).populate("userId");
+
+Difference between populate() and lookup?
+
+populate is Application Level (Mongoose)
+lookup is Database Level (MongoDB)
+
+
+QUES 6 :What is sharding
+✅ ANS :Sharding is the process of storing data records across multiple machines to support horizontal scaling. Each machine (shard) holds a subset of the data.
+
+| Feature            | Description                                      |
+| ------------------ | ------------------------------------------------ |
+| What it is         | Splitting a large collection into smaller parts  |
+| Goal               | Horizontal scaling and better performance        |
+| Uses               | Big data, high traffic, distributed architecture |
+| MongoDB components | Shard, Mongos (router), Config server            |
+
+⚡ Benefits:
+Faster queries (parallel access)
+Handles big data (each shard has limited data)
+Adds scalability and fault tolerance
+
+Example : Let’s say you have users from different countries:
+A query for a US user will be routed directly to Shard 1.
+| Shard   | Data Stored            |
+| ------- | ---------------------- |
+| Shard 1 | Users from 🇺🇸 US     |
+| Shard 2 | Users from 🇮🇳 India  |
+| Shard 3 | Users from 🇫🇷 France |
+
+QUES 7.What is aggregate in MongoDb
+✅ ANS : aggregate() method is used to process data records and return computed results — like performing SQL-like operations such as GROUP BY, JOIN, FILTER, SORT, SUM, etc. on documents.
+⚡ Use Cases:
+Reporting and analytics
+Data transformation
+Filtering, grouping, and sorting
+Joining collections (like SQL joins)
+
+| Stage      | Description                             |
+| ---------- | --------------------------------------- |
+| `$match`   | Filters documents (like `WHERE`)        |1
+| `$group`   | Groups documents (like `GROUP BY`)      |
+| `$sort`    | Sorts the documents                     |
+| `$project` | Picks specific fields                   |
+| `$lookup`  | Performs a join with another collection |
+| `$limit`   | Limits the number of documents          |
+| `$skip`    | Skips documents (for pagination)        |
+| `$count`   | Counts documents                        |8
+
+Common stages :
+MongoDB - SQL 
+
+$match - WHERE
+$group - GROUP BY
+$sort - ORDER BY
+$project - SELECT columns
+$lookup - JOINs
+
+✅ Syntax:
+db.collection.aggregate([
+  { stage1 },
+  { stage2 },
+  { stage3 },
+  ...
+]);
+Each stage is an object that performs an operation and passes its result to the next stage — like a pipeline.
+
+Example :  Sample Data in orders collection:
+{
+  _id: ObjectId("..."),
+  item: "Laptop",
+  price: 1000,
+  quantity: 2,
+  category: "Electronics",
+  userId: ObjectId("..."),
+  date: ISODate("2024-05-01")
+}
+
+i) $group – Group by a field and apply aggregation
+
+db.orders.aggregate([
+  {
+    $group: {
+      _id: "$category",
+      totalSales: { $sum: "$price" },
+      itemCount: { $sum: 1 }
+    }
+  }
+]);
+
+✅ Groups by category and calculates total sales and item count.
+
+ii) $limit – Limit the number of reults
+
+db.orders.aggregate([
+  { $limit: 5 }
+]);
+
+✅ Returns only the first 5 documents.
+
+iii) $lookup – Join with another collection
+Assume a users collection with _id matching orders.userId:
+
+db.orders.aggregate([
+  {
+    $lookup: {
+      from: "users",
+      localField: "userId",
+      foreignField: "_id",
+      as: "userDetails"
+    }
+  }
+]);
+
+✅ Joins orders with users, adds userDetails array to each order.
+
+iv) $match – Filter documents (like WHERE)
+db.orders.aggregate([
+  { $match: { category: "Electronics" } }
+]);
+
+✅ Filters only electronics orders.
+
+v) $project – Select specific fields or transform them
+
+db.orders.aggregate([
+  {
+    $project: {
+      item: 1,
+      totalCost: { $multiply: ["$price", "$quantity"] },
+      _id: 0
+    }
+  }
+]);
+
+Returns item and calculated total cost. Removes _id.
+
+vi) $sort – Sort results
+ db.orders.aggregate([
+  { $sort: { price: -1 } } // Descending
+]);
+
+vii) $skip – Skip certain number of documents
+db.orders.aggregate([
+  { $skip: 5 }
+]);		
+
+✅ Skips the first 5 documents — useful for pagination.
+
+vii) $count – Counts documents
+db.orders.aggregate([
+  { $match: { category: "Electronics" } },
+  { $count: "electronicOrders" }
+]);
+
+✅ Returns: { electronicOrders: 4 }
+
+"When do you use aggregate instead of find?"
+Whenever we need: grouping, calculations, joins, pipelines
+
+QUES : 10 Paginated api in MongoDb
+✅ ANS: Pagination using skip and limit
+🧠 Concept:
+skip: how many documents to skip (based on page)
+limit: how many documents to return (page size)
+
+app.get('/orders', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const total = await db.orders.countDocuments();
+  const data = await db.orders.find({})
+    .sort({ date: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  res.json({
+    data,
+    currentPage: page,
+    totalPages: Math.ceil(total / limit),
+    totalItems: total
+  });
+});
+
+..................Mongodb------
+ db.createCollection("logs")
+ show collections // List all collections
+ db.collection_name.drop() // Delete/Drop a collection
+
+insertOne() / insertMany() -Ceate
+find() / findOne()
+updateOne() / updateMany()
+deleteOne() / deleteMany()
+
+----------------BASIC SYNTAX FOR SQL ------------------
+show tables; (to get all tables)
+desc table; 
+
+
+CREATE TABLE product (
+    product_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(200)
+);
+
+INSERT INTO product (product_name)
+VALUES ("Vikas");
+
+INSERT INTO product (product_name)
+VALUES
+("Laptop"),
+("Phone"),
+("Keyboard");
+
+UPDATE product
+SET product_name = "Monitor"
+WHERE product_id = 1;
+
+DELETE FROM product
+WHERE product_id = 1;

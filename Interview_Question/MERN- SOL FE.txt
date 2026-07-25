@@ -1,0 +1,972 @@
+       -------------------------CSS----------------------------------
+
+QUE 1 : Difference between rem,em,px
+
+Ans :In CSS, `rem`, `em`, and `px` are units of measurement used to define the size of elements, such as text, margins, and padding.
+
+PX (Pixels):
+1. *Absolute unit*: `px` is an absolute unit, meaning it's fixed and doesn't change based on other factors.
+2. *Screen-based*: `px` is based on the screen's resolution, making it suitable for digital displays.
+3. *Not scalable*: `px` values don't scale when the user zooms in or out of the page.
+
+EM:
+1. *Relative unit*: `em` is a relative unit, meaning it's based on the font size of the parent element.
+2. *Scalable*: `em` values scale when the user zooms in or out of the page.
+3. *Cascading*: `em` values can be affected by the font size of parent elements, making it useful for creating scalable typography.
+
+REM (Root EM):
+1. *Relative unit*: `rem` is a relative unit, meaning it's based on the root element's font size (usually the `html` element).
+2. *Scalable*: `rem` values scale when the user zooms in or out of the page.
+3. *Not cascading*: `rem` values are not affected by the font size of parent elements, making it useful for creating consistent typography.
+
+Key differences:
+1. *Scalability*: `em` and `rem` are scalable, while `px` is not.
+2. *Relative vs. absolute*: `em` and `rem` are relative units, while `px` is an absolute unit.
+3. *Cascading behavior*: `em` values can be affected by parent elements, while `rem` values are not.
+
+When to use each:
+1. *Use `px` for*: Fixed-size elements, such as borders, margins, or padding.
+2. *Use `em` for*: Scalable typography, especially when you want the font size to be relative to the parent element.
+3. *Use `rem` for*: Consistent typography, especially when you want the font size to be relative to the root element.
+
+
+QUE 2.Semantic elements or tag
+
+Ans : A semantic tag in HTML is an element that clearly describes its meaning and purpose in a human- and machine-readable way. These tags help structure the content and make it more accessible for screen readers, search engines, and developers.
+Examples of Semantic Tags:
+<header> – Defines a header for a document or section.
+
+<nav> – Defines navigation links.
+
+<main> – Specifies the main content of a document.
+
+<section> – Represents a standalone section.
+
+<article> – Represents independent, self-contained content.
+
+<aside> – Defines content aside from the main content (e.g., sidebar).
+
+<footer> – Defines a footer for a document or section.
+
+
+QUES 3 : How does flex box helps us in responsiveness in css
+
+Ans : Flexbox (Flexible Box Layout) helps in creating responsive layouts in CSS by making it easier to distribute space, align items, and adapt layouts to different screen sizes without using floats or positioning.
+
+- Flexible Widths : This makes all items grow evenly to fill the container.
+.item {
+  flex: 1;
+}
+
+- Auto-Wrapping : With flex-wrap: wrap;, items will wrap to the next line on smaller screens instead of overflowing.
+.container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+-Alignment Control
+.container {
+  justify-content: center;
+  align-items: center;
+}
+- Direction Adaptability - flex-direction 
+
+QUES 4.What is aria attribute in context of aria-label in html
+
+ARIA (Accessible Rich Internet Applications) attributes in HTML are used to improve accessibility by providing additional information to assistive technologies like screen readers. They help describe roles, states, and properties of UI elements, especially in dynamic or custom components that standard HTML may not fully convey.
+
+Key Use Cases:
+Labeling non-text elements (e.g., aria-label, aria-labelledby)
+
+Describing elements (e.g., aria-describedby)
+
+Indicating dynamic states (e.g., aria-expanded, aria-checked, aria-hidden)
+
+Defining widget roles (e.g., role="button", role="dialog" for custom elements)
+
+Enhancing keyboard navigation in rich UI components (e.g., modals, tabs, accordions)
+
+
+----------------------------------------JS/TS-------------------------------------------
+Ques : What is v8.
+ANS. V8 is Google's open-source JavaScript engine. Its job is to:Parse JavaScript code,Compile it into machine code, execute it.
+Node.js uses V8 to execute JavaScript outside the browser.
+
+Ques : 
+What is hoisting?
+js hoist declarations to the top of their scope.
+Hoisting is JavaScript's behavior of moving declarations to the top of their scope during the creation phase. Variable declarations (var) are hoisted and initialized with undefined, while let and const are hoisted but remain in the Temporal Dead Zone until their declaration is executed. Function declarations are hoisted with their full implementation.
+
+var → Hoisted, initialized as undefined.
+let / const → Hoisted, but cannot be accessed before declaration (TDZ).
+Function declarations → Fully hoisted.
+Function expressions → Variable is hoisted, function assignment is not.
+
+What is a closures ?
+A closure is a function that remembers and can access variables from its lexical (outer) scope even after the outer function has finished executing. JavaScript achieves this by preserving the function's lexical environment as long as the inner function still references it.
+
+What is a Lexical Scope?
+Lexical scope means a function's scope is determined by where it is defined in the source code, not where it is called.
+
+What is Garbage collector ?
+A garbage collector is a built-in memory management component of the JavaScript engine that tracks allocated memory, determines which objects are no longer reachable, and reclaims that memory automatically.
+
+What is event Delegation?
+Event Delegation is a JavaScript technique where a single event listener is attached to a common parent element instead of multiple child elements. It works because of event bubbling. When a child element is clicked, the event bubbles up to the parent, and event.target identifies which child triggered the event. This reduces the number of event listeners, improves performance, and automatically supports dynamically added elements.
+
+<div id="container">
+    <button class="btn">One</button>
+    <button class="btn">Two</button>
+    <button class="btn">Three</button>
+</div>
+
+container.addEventListener("click", (event) => {
+    console.log(event.target);
+    console.log(event.currentTarget);
+});
+
+event.target → the element that actually triggered the event (the button).
+event.currentTarget → the element whose listener is currently running (the container).
+
+QUES 1.Shallow and deep copy ( structuredClone(), JSON.parse(JSON.stringify()) , _.cloneDeep() Lodash) in js
+
+ANS : Shallow copy will only copy the top level of information from an object i.e it will only copy the references whereas Deep copy will all the data deeply or recursively.
+
+QUES 2.Difference between type and interface in Typescript. When would you choose one over the other?
+
+ANS : In TypeScript, both interface and type can be used to define the shape of an object, but there are some important differences between them.
+Declaration Merging
+ - interface Supports declaration merging. You can define the same interface multiple times and they'll merge.
+ - type not support declaration merging. Redefining a type with the same name causes an error.
+
+Extending
+- interface Can extend other interfaces or even multiple interfaces using extends.
+- type Can use & (intersection) to combine multiple types.
+
+Most Use Cases
+-interface is used Primarily for object shape definitions.
+-type Can define unions, primitives, tuples, etc., in addition to object shapes.
+
+General use cases
+Interface - Generally preferred for defining API shapes or component props.
+type - More flexible for complex type logic, utility types(when working with unions and discriminated unions) and conditional types.
+
+QUES 3.When to use rest parameter and spread parameter, also tell the difference
+
+Rest parameters and spread parameters are both used to work with arrays and objects in JavaScript, but they serve different purposes.
+
+Rest Parameters:
+1. *Function arguments*: Rest parameters are used in function definitions to collect a variable number of arguments into an array.
+2. *Syntax*: `...args`
+3. *Example*: `function sum(...numbers) { return numbers.reduce((a, b) => a + b, 0); }`
+
+Spread Parameters:
+1. *Array and object literals*: Spread parameters are used in array and object literals to spread out the elements of an array or object.
+2. *Syntax*: `...array` or `...object`
+3. *Example*: `const arr1 = [1, 2, 3]; const arr2 = [...arr1, 4, 5];`
+
+Key differences:
+1. *Purpose*: Rest parameters collect arguments into an array, while spread parameters spread out the elements of an array or object.
+2. *Usage*: Rest parameters are used in function definitions, while spread parameters are used in array and object literals.
+3. *Direction*: Rest parameters gather elements, while spread parameters disperse elements.
+
+
+QUES 4.Difference between call, apply and bind method in js
+
+The `call`, `apply`, and `bind` methods in JavaScript are used to manipulate the `this` keyword and function arguments."
+
+"call(), apply(), and bind() are used to explicitly control the value of this inside a function.
+ call() invokes the function immediately and accepts arguments individually after the this object. 
+ apply() also invokes the function immediately but expects the arguments as an array. 
+ bind() does not execute the function immediately; instead, it returns a new function with this permanently bound, which can be executed later."
+
+Key differences:
+1. *Argument passing*: `call` and `bind` passes arguments individually, while `apply` passes arguments as an array.
+2. *Function invocation*: `call` and `apply` invoke the function immediately, while `bind` returns a new function without invoking it.
+
+| Requirement                       | Solution |
+| --------------------------------- | -------- |
+| invoke with custom this           | call     |
+| invoke with array arguments       | apply    |
+| preserve this for later execution | bind     |
+
+call(thisArg, arg1, arg2, arg3)
+apply(thisArg, [arg1, arg2, arg3])
+ 
+note : first argument will be always object, if object is not present pass null.
+
+
+Examples:
+```
+const obj = { name: 'John' };
+
+function greet(age) {
+ return this.name + age;
+}
+
+// Call
+greet.call(obj, 30,40); 
+
+// Apply
+greet.apply(obj, [30]);
+
+// Bind
+const boundGreet = greet.bind(obj, 30);
+boundGreet();
+```
+
+In summary, `call`, `apply`, and `bind` are useful methods for manipulating the `this` context and function arguments in JavaScript.
+
+function greet(a, b) {
+    console.log(a, b);
+}
+
+const arr = [10, 20];
+
+greet.call(null, ...arr);
+greet.apply(null, arr);
+
+"Arrow functions were introduced mainly to solve the confusion around this. Normal functions create their own this based on how they're called, which often caused issues in callbacks like setTimeout or event handlers.
+Arrow functions don't have their own this; instead, they lexically inherit this from the surrounding scope. This eliminates the need for patterns like const self = this or using bind(this) in many cases."
+
+const user = {
+    name: "Vikas",
+
+    greet: function () {
+
+        // setTimeout(function () {
+        //     console.log(this.name);
+        // }.bind(this), 2000);
+
+         setTimeout( ()=> {
+            console.log(this.name);
+        }, 2000);
+
+    }
+};
+
+user.greet();
+
+QUES 5.Promises in js
+QUES 6.Storages in js
+
+QUES 7.How will you achieve suggestion (autocomplete) of values in TypeScript
+
+type Fruit = "Banana" | "Apple" | "Orange";
+
+function getFruits(fruit: Fruit) {
+    console.log(`This is ${fruit}`);
+}
+
+getFruits("Banana"); // 👍 autocomplete will suggest "Banana", "Apple", "Orange"
+
+
+
+QUES 8.Object.assign() method in js
+
+ANS : Object.assign() is a built-in method used to copy properties from one or more source objects to a target object. It's often used for shallow cloning or merging objects.
+
+SYNTAX : Object.assign(target, ...sources)
+
+EX- const obj1 = { a: 1 };
+const obj2 = { b: 2 };
+const result = Object.assign({}, obj1, obj2);
+
+console.log(result); // { a: 1, b: 2 }
+
+QUES 9. Create promise in js.
+
+Network calls are asynchronous operations because they take time.
+Promises are JavaScript's way of representing the future result of those operations.
+async/await are syntax that make working with Promises much easier to read and write.
+
+different type of promises 4 :
+Promise.all() : If one fails, the whole promise rejects.
+Promise.allSettled() : Waits for every promise, regardless of success or failure.
+Promise.race() : Whichever promise settles first (resolve or reject) wins.
+Promise.any() : Returns the first successful promise.
+
+✅ ANS : 
+let promise = new Promise((resolve,reject)=>{
+    let success = false;
+    if(success) resolve("data fetched");
+    else reject("problem");
+});
+promise.then((data)=> console.log( data)).catch((err)=> console.log(err))
+
+or
+let a =10;
+
+let promise = new Promise((resolve,reject)=>{
+    setTimeout(()=>{
+        resolve(20)
+    },2000)
+})
+promise.then((data)=> console.log(a + data)).catch((err)=> console.log(err))
+
+🔍 unresolved (pending) Promise in JavaScript:
+
+const unresolvedPromise = new Promise((resolve, reject) => {
+  // Never call resolve or reject
+});
+
+console.log(unresolvedPromise); // Promise <pending>
+
+
+
+QUES 10. what are the Features introduced  in ES6
+✅ ANS : ES6 (ECMAScript 2015) introduced many exciting features to the JavaScript language. Here are some of the most notable ones:
+
+*1. Let and Const*
+- `let` and `const` are new ways to declare variables.
+- `let` is block-scoped, meaning it's only accessible within the block it's declared in.
+- `const` is also block-scoped and cannot be reassigned.
+
+*2. Arrow Functions*
+- Arrow functions are a concise way to write functions.
+- They use the `=>` syntax and automatically bind the `this` keyword.
+
+*3. Classes*
+- Classes are a new way to create objects and inheritance.
+- They use the `class` keyword and provide a more traditional OOP syntax.
+
+*4. Promises*
+- Promises are a way to handle asynchronous operations.
+- They provide a more manageable way to handle callbacks.
+
+*5. Generators*
+- Generators are a way to create iterators.
+- They use the `yield` keyword to produce a series of values.
+
+*6. Template Literals*
+- Template literals are a new way to create strings.
+- They use backticks (`) and provide a more readable way to create strings with variables.
+
+*7. Destructuring*
+- Destructuring is a way to extract values from arrays and objects.
+- It provides a more concise way to assign values to variables.
+
+*8. Spread Operator*
+- The spread operator is a way to spread the elements of an array or object.
+- It uses the `...` syntax and provides a more concise way to merge arrays and objects.
+
+*9. Modules*
+- Modules are a way to organize code into reusable units.
+- They use the `import` and `export` keywords to import and export values.
+
+*10. Symbol*
+- Symbols are a new primitive data type.
+- They are unique and immutable, and can be used as property keys.
+
+*11. Map and Set*
+- Maps and sets are new data structures.
+- Maps are key-value pairs, and sets are collections of unique values.
+
+*12. WeakMap and WeakSet*
+- Weak maps and weak sets are variants of maps and sets.
+- They use weak references, which allow the garbage collector to remove entries.
+
+*13. Proxy*
+- Proxies are a way to intercept and modify the behavior of objects.
+- They use the `Proxy` constructor and provide a way to implement meta-programming.
+
+*14. async/await*
+- Async/await is a way to write asynchronous code that's easier to read.
+- It uses the `async` and `await` keywords to write asynchronous code that's more synchronous in style.
+
+QUES 11 : Difference between Stack and Queue. Real time example
+✅ ANS : Stack work on LIFO and Queue work on FIFO.
+Stack or LIFO example - Backspace on keyboard.
+Queue or FIFO - Printer machine.
+
+QUES 12 : What is mixins in js
+✅ ANS : Mixins are a way to share reusable method / property across multiple classes in JavaScript. Since JS only supports single inheritance, mixins allow us to 'compose' functionality by assigning methods directly to class prototypes using Object.assign."
+
+SYNTAX : Object.assign(Class.prototype, Mixin)
+
+🧪 Example:
+let mixin = {
+    mixinData() {
+        console.log("mixin data");
+    }
+};
+
+class Vikas {
+    constructor() {
+        // constructor logic (if any)
+    }
+
+    getData() {
+        console.log("data sent");
+    }
+}
+
+// Apply mixin
+Object.assign(Vikas.prototype, mixin);
+
+let vikas = new Vikas();
+vikas.getData();     // prints: data sent
+vikas.mixinData();   // prints: mixin data
+
+⚠️ Important Notes:
+Mixins can add multiple methods to multiple classes.
+It’s not real inheritance; it’s composition.
+If multiple mixins have the same method name, the last one wins (due to overwrite).
+
+Ques 13. What is object prototype.
+✅ ANS: Every JavaScript object has a hidden reference called a prototype. If a property or method is not found in the object itself, JavaScript looks for it in its prototype, creating a prototype chain. This enables code reuse and inheritance.
+
+const person = {
+    greet() {
+        console.log("Hello");
+    }
+};
+
+const student = Object.create(person); // 
+student.greet(); // inherited from prototype
+
+eg2. 
+
+const person = {
+    greet() {
+        console.log("Hello");
+    }
+};
+
+const user = {
+    name: "Vikas"
+};
+
+user.__proto__ = person;
+
+console.log(user.name); // Vikas
+
+user.greet(); // Hello
+
+
+
+Ques 14 : Memory leak in js 
+✅ ANS : "Garbage collector only removes unreachable objects. Memory leaks happen when unnecessary references are still retained through closures, event listeners, timers, globals, or detached DOM nodes."
+
+eg. Timer function never stopped, references not get removed by execultion
+
+solution : "Remove unnecessary references"
+
+button.addEventListener("click", handleClick);
+If DOM removed but listener still exists:
+closure references remain
+memory cannot free
+button.removeEventListener("click", handleClick);
+
+
+ const id = setInterval(() => {
+    console.log("running");
+  }, 1000);	
+
+  return () => clearInterval(id);
+
+Nullify Large References
+ let hugeData = new Array(1000000);
+     hugeData = null;
+
+Ques : custom memoization (caching) DP from leetcode
+
+                                                   -------------------REACT----------------------------
+
+
+QUES 1.In react how we can call an api before rendering the ui
+✅ ANS : By using componentDidMount() or `useEffect()` hook with async/await 
+
+QUES 2.Higher order component in react
+✅ ANS: A Higher-Order Component (HOC) in React is a function that takes a component as an argument and returns a new component with additional props or behavior.
+
+Characteristics:
+1. *Function*: A HOC is a function that returns a new component.
+2. *Component as argument*: A HOC takes a component as an argument.
+3. *New component*: A HOC returns a new component with additional props or behavior.
+
+Benefits:
+1. *Reusability*: HOCs promote code reusability.
+2. *Flexibility*: HOCs can be used to modify the behavior of a component.
+3. *Separation of concerns*: HOCs can be used to separate concerns and keep components focused on their core functionality.
+
+Example:
+```
+jsx
+import React from 'react';
+
+const withLogging = (WrappedComponent) => {
+  const LogProps = (props) => {
+    console.log(props);
+    return <WrappedComponent {...props} />;
+  };
+  return LogProps;
+};
+
+const HelloWorld = () => {
+  return <div>Hello World!</div>;
+};
+
+const HelloWorldWithLogging = withLogging(HelloWorld);
+```
+🔁 Flow:
+You render: <HelloWorldWithLogging message="Hi!" />
+This calls: LogProps({ message: "Hi!" })
+Inside LogProps, it logs the props and returns:
+<HelloWorld message="Hi!" />
+
+
+QUES 3.When to use redux store and context api
+✅ ANS : Redux and Context API are both state management tools in React, but they serve different purposes and are suited for different use cases.
+
+Redux:
+1. *Complex applications*: Redux is well-suited for complex applications with multiple interconnected components.
+2. *Global state*: Redux is ideal for managing global state that needs to be accessed by multiple components.
+3. *Predictable behavior*: Redux provides a predictable and consistent way of managing state, making it easier to debug and test.
+
+Context API:
+1. *Simple to medium complexity applications*: Context API is suitable for simple to medium complexity applications where state management is relatively straightforward.
+2. *Local state*: Context API is ideal for managing local state that is specific to a particular part of the application.
+3. *Easy to implement*: Context API is easy to implement and requires less boilerplate code compared to Redux.
+
+Key differences:
+1. *Scalability*: Redux is more scalable and suitable for large, complex applications, while Context API is better suited for smaller applications.
+2. *Complexity*: Redux requires more setup and boilerplate code, while Context API is relatively simple to implement.
+3. *Predictability*: Redux provides a more predictable and consistent way of managing state, while Context API can be more prone to inconsistencies.
+
+QUES 4.How to optimize the react application
+✅ ANS:
+1. Use React.memo to Prevent Unnecessary Re-Renders
+Only re-renders if props change (shallow comparison).
+
+2. useMemo and useCallback for Expensive Calculations & Stable References
+useMemo: Caches expensive computations.
+useCallback: Prevents function re-creation on each render.
+
+3. Code Splitting with React.lazy and Suspense
+Reduces initial bundle size.
+
+4. Avoid Anonymous Functions in JSX
+5. Pagination or Virtualization for Large Lists
+Renders only visible items in a list.
+
+6. Bundle Optimization
+Tree shaking (remove unused code)
+Minification (via Webpack/Terser)
+Dynamic imports
+Avoid large libraries if smaller alternatives exist
+
+7. Image and Asset Optimization
+Compress images (WebP, AVIF)
+Lazy load images (loading="lazy")
+Use CDN if needed
+
+8. Avoid Prop Drilling — Use Context/Redux Wisely
+
+9. Avoid Reconciliation with Stable Keys
+Always use stable, unique keys in list renderin
+
+10. Optimize API Calls
+Debounce user inputs
+Use caching (e.g. react-query, SWR)
+Avoid unnecessary re-fetching
+
+11. Monitor and Profile
+Use:
+React DevTools (Profiler tab)
+Lighthouse
+Chrome Performance tab
+
+QUES 5.When to use react memo, useMemo and useCallBack
+QUES 7.Life cycle methods in react
+QUES 8.Comparison of hooks with life cycle method
+✅ ANS :
+| Class Method           | Equivalent Hook                                 |
+| ---------------------- | ----------------------------------------------- |
+| `componentDidMount`    | `useEffect(() => { ... }, [])`                  |
+| `componentDidUpdate`   | `useEffect(() => { ... }, [dependency])`        |
+| `componentWillUnmount` | `useEffect(() => { return () => cleanup }, [])` |
+
+useEffect(() => {
+  // runs on mount
+  fetchData();
+
+  return () => {
+    // runs on unmount
+    clearInterval(timer);
+  };
+}, []);
+
+example : clearInterval(timer) ensures there's no memory leak or stray interval running after the component is gone.
+
+useEffect(() => {
+  const timer = setInterval(() => {
+    console.log("tick");
+  }, 1000);
+
+  return () => {
+    clearInterval(timer); // cleanup
+  };
+}, []);
+
+Logs "tick" every second
+
+When the component unmounts, the interval is cleared
+
+
+
+QUES 9.Explain interceptor in axios in react.
+✅ ANS : An interceptor is like a middleware. It intercepts(catch) every request or response before it is sent or received.
+There are two types:
+Request Interceptor – runs before the request is sent.
+Response Interceptor – runs after the response is received.
+
+Why to Use Interceptors?
+Add authentication tokens to every request
+Show/hide loaders globally
+Handle errors globally (e.g., refresh token or show error toast)
+
+| Type     | When it runs           | Use Case                        |
+| -------- | ---------------------- | ------------------------------- |
+| Request  | Before sending request | Add token, modify headers       |
+| Response | After getting response | Handle errors globally, refresh |
+
+Example : 
+Request Interceptor : This automatically adds the token to every outgoing request. // axiosConfig.js
+
+import axios from 'axios';
+// Create an axios instance
+const api = axios.create({
+  baseURL: 'https://example.com/api', // your base URL
+});
+
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config; // must return config
+  },
+  (error) => Promise.reject(error)
+);
+ 
+Response Interceptor : This handles errors globally instead of in every .catch().
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      // Redirect to login or refresh token
+      console.log("Unauthorized!");
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+
+
+QUES 10.Difference between PUT and PATCH request
+✅ ANS :
+Purpose of PUT:
+Replaces the entire resource with the data provided.
+
+Use When:
+You want to update or replace the whole object.
+
+Purpose of PATCH:
+Partially updates a resource — only the fields provided are modified.
+
+Use When:
+You want to update just one or a few fields without altering the rest.
+
+
+
+QUES 11.Difference between useEffect and useLayoutEffect in react
+✅ ANS :In React, useEffect and useLayoutEffect are both hooks used to perform side effects in functional components, but they differ in timing and behavior.
+Only use useLayoutEffect when you need to read layout or synchronously manipulate DOM before the browser repaints.
+
+Key Differences:
+| Aspect      | `useEffect`                   | `useLayoutEffect`                           |
+| ----------- | ----------------------------- | ------------------------------------------- |
+| Timing      | After DOM paint               | Before DOM paint                            |
+| Blocking    | No                            | Yes                                         |
+| Use case    | Side-effects (API calls etc.) | DOM reads/writes (e.g., refs)               |
+| Performance | More performant               | Less performant (can cause jank if misused) |
+
+
+QUES 12.How you will call the apis parallelly in react 
+✅ ANS : Using Promise.all()
+When APIs are independent (don’t rely on each other’s result)
+When you need faster performance by reducing wait time.
+❌ Fails all if one fails (unless handled individually)
+
+
+QUES 13.What is Virtual dom in react, how it works
+
+QUES 14.How to pass data from child to parent
+✅ ANS: by using callback function, passing callback function as a prop from the parent to the child.
+
+Eg : 
+1. Parent Component: Define a callback function and pass it to the child.
+ function Parent() {
+  const handleDataFromChild = (data) => {
+    console.log("Received from child:", data);
+  };
+
+  return <Child onSendData={handleDataFromChild} />;
+}
+
+2. Child Component: Call the function passed via props with the data you want to send.
+function Child({ onSendData }) {
+  const sendData = () => {
+    onSendData("Hello Parent!");
+  };
+
+  return <button onClick={sendData}>Send Data to Parent</button>;
+}
+
+QUES 15.Virtualization in React
+✅ ANS:Virtualization in React is a performance optimization technique where only the items visible on the screen are rendered, instead of rendering the entire list.
+
+"Virtualization is a React performance optimization technique where only the items currently visible in the viewport are rendered instead of the entire list. As the user scrolls, off-screen items are unmounted and newly visible items are rendered. This significantly reduces the number of DOM nodes, lowers memory usage, improves initial render time, and provides smoother scrolling for large datasets. Popular libraries include react-window and @tanstack/react-virtual."
+
+Imagine you have 100,000 products.
+
+Without virtualization
+If you do:
+products.map((product) => (
+  <ProductCard key={product.id} product={product} />
+));
+
+React creates 100,000 DOM elements.
+Problems: Slow initial render, High memory usage, Laggy scrolling, Browser performance degrades
+
+With virtualization : Suppose your screen can display only 10 items.
+
+Instead of rendering all 100,000 items, React renders only: 1-10 items
+When you scroll, React removes the items that go off-screen and renders the next visible ones:11-20 items
+
+Although the list appears to contain all 100,000 items, at any moment there may only be around 10–20 DOM elements.
+
+QUES 15.Throttling and debouncing in React
+✅ ANS: Throttling and debouncing are techniques used in React (and general JavaScript) to control how frequently a function is executed, especially for performance optimization — like in scroll, resize, input, or button click events.
+
+🔁 Debouncing
+"Debouncing delays execution until the user stops triggering events for a specified duration. In React, this is commonly implemented using useEffect with setTimeout and cleanup via clearTimeout."
+
+🧠 Real-world analogy:
+Wait until a person stops typing before responding.
+
+📦 Use case in React:
+Search bar autocomplete
+Form validations while typing
+
+🔂 Throttling
+limit how often a function can execute within a time interval.
+allow execution only once every X ms
+
+🧠 Real-world analogy:
+You can press the elevator button rapidly, but it only responds once every few seconds.
+
+📦 Use case in React:
+Window resize listener
+Scroll events
+Preventing button spam
+
+Summary Table :
+| Feature  | Debounce                    | Throttle                             |
+| -------- | --------------------------- | ------------------------------------ |
+| Trigger  | After a delay of inactivity | At most once in a specified interval |
+| Use case | Text input, search box      | Scroll, resize, rapid click          |
+| Behavior | Delays execution            | Limits execution rate                |
+
+throttle :
+
+function throttle(fn, delay) {
+    let lastExecuted = 0;
+
+    return function () {
+        const now = Date.now();
+
+        if (now - lastExecuted >= delay) {
+            fn();
+            lastExecuted = now;
+        }else{
+            console.log("wait");
+        }
+    };
+}
+
+const throttledClick = throttle(clickButton, 3000);
+
+throttledClick();throttledClick();throttledClick();
+
+function clickButton() {
+    console.log("clicked");
+}
+
+
+
+Debounce :
+
+  const [data, setData] = useState("");
+  const [debounce, setDebounce] = useState("");
+
+  useEffect(() => {
+
+    const timer = setTimeout(() => {
+      setDebounce(data);
+    }, 500);
+
+    return () => clearTimeout(timer);
+
+  }, [data]);
+
+inside return :
+  <input
+        value={data}
+        onChange={(e) => setData(e.target.value)}
+      />
+
+      <p>Immediate: {data}</p>
+
+      <p>Debounced: {debounce}</p>
+
+
+
+QUES 16.package.json and package.lock.json
+✅ ANS:
+  | Feature                | `package.json`                 | `package-lock.json`               |
+| ---------------------- | ------------------------------ | --------------------------------- |
+| Purpose                | Define project and deps        | Lock exact versions of deps       |
+| Editable               | Yes                            | No (auto-generated)               |
+| Version ranges         | Yes (`^1.2.0`, `~1.2.3`, etc.) | No (exact versions)               |
+| Dependency tree        | Top-level only                 | Full tree (including nested deps) |
+| Use in version control | Yes                            | Yes (must be committed)           |
+
+
+QUES 17. what will happen if we have forget to put await in front of api in react js
+✅ ANS: the result will be a Promise instead of the actual resolved data. i.e Promise {<pending>}
+
+What goes wrong:
+res will be a pending Promise, not the actual data.
+If you try to use this Promise as if it were the actual data (e.g., rendering, setting state), you’ll likely get:
+    - Unexpected results (like [object Promise] in the UI).
+    - Errors like res.data is undefined (in case of Axios).
+
+const getData = async () => {
+  const res = fetch("https://api.example.com/data"); // forgot await
+  console.log(res); // Logs: Promise {<pending>}
+};
+
+QUES 18. What is currying in js or react
+✅ ANS: Currying is a technique in which a function returns another function to handle one argument at a time, and allowing arguments to be passed separately rather than all at once.
+
+Currying is a technique in JavaScript where a function doesn't take all arguments at once, but instead takes them one by one — each returning a new function that takes the next argument.
+
+"Currying converts a function with multiple arguments into a sequence of functions that each take one argument. We use it to create reusable, specialized functions by fixing some arguments in advance. It's commonly used in React event handlers, Express middleware (like authorize('ADMIN')), logging utilities, validators, and API wrappers. Currying also improves function composition and reduces repeated arguments."
+
+js- example :
+
+// Regular function
+function add(a, b) {
+  return a + b;
+}
+
+console.log(add(2, 3)); // Output: 5
+
+// ✅ Curried version using closures
+let curriedAdd = function(a) {
+  return function(b) {
+    console.log(a + b);    // Output: 5
+  };
+}
+
+curriedAdd(2)(3); 
+
+ Explanation:
+curriedAdd(2) returns a function.
+
+Then (3) calls that returned function.
+
+Final result is 2 + 3 = 5.
+
+// ✅ Curried version using bind method
+
+let curriedAdd = function(a,b) {
+    console.log(a + b);
+}
+let curriedAddTwo = curriedAdd.bind(this,2);
+curriedAddTwo(3);
+
+eg : without curry api call
+
+function request(baseUrl, token, endpoint) {
+    console.log(baseUrl, token, endpoint);
+}
+
+request(BASE_URL, token, "/users");
+request(BASE_URL, token, "/orders");
+request(BASE_URL, token, "/products");
+
+eg: with curry
+const request = (baseUrl) => (token) => (endpoint) => {
+    console.log(baseUrl, token, endpoint);
+};
+
+const api = request(BASE_URL)(token);
+
+api("/users");
+api("/orders");
+api("/products");
+
+eg 2: without curry
+function log(level, message) {
+    console.log(`[${level}] ${message}`);
+}
+
+log("INFO", "Server Started");
+log("INFO", "User Logged In");
+log("ERROR", "Database Down");
+
+with curry :
+const logger = (level) => (message) => {
+    console.log(`[${level}] ${message}`);
+};
+
+const info = logger("INFO");
+const error = logger("ERROR");
+
+info("Server Started");
+info("User Logged In");
+error("Database Down");
+🔧 Example for React:
+
+const handleClick = (id) => () => {
+  console.log('Clicked item with ID:', id);
+};
+
+<button onClick={handleClick(5)}>Click</button>
+
+
+Ques 19. Difference between oauth and jwt
+✅ ANS: OAuth is an authorization framework that allows users to log in using third-party providers like Google or GitHub. JWT is a token format used to securely store user information after authentication. A common flow is: user logs in with Google using OAuth, then our backend generates a JWT for future authenticated requests.
+
+| OAuth                                       | JWT                                                |
+| ------------------------------------------- | -------------------------------------------------- |
+| Authorization framework                     | Token format                                       |
+| Used for third-party login (Google, GitHub) | Used to identify/authenticate users                |
+| Grants permission to access resources       | Stores user information securely in a signed token |
+
+Ques 20. Difference between server and serverless
+✅ ANS: In a traditional server architecture, we manage the server, deployment, and scaling ourselves. In serverless architecture, cloud providers like AWS Lambda manage the infrastructure, automatically scale the application, and we pay only for the execution time of our functions.
+
+| Server                | Serverless                                |
+| --------------------- | ----------------------------------------- |
+| You manage the server | Cloud provider manages the infrastructure |
+| Always running        | Runs only when triggered                  |
+| Manual scaling        | Automatic scaling                         |
+| Pay for server uptime | Pay only for execution time               |
+

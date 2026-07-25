@@ -1,0 +1,214 @@
+•  HTTP → Business operations (Product, Auth, Payment, Checkout) 
+•  RabbitMQ → Asynchronous notifications (cart.updated, order.created, payment.completed) 
+•  Socket.IO → Real-time UI updates 
+•  Gateway → Acts as the bridge between RabbitMQ and Socket.IO.
+
+Q1. Why doesn't Cart Service directly use Socket.IO?
+
+"The Cart Service is responsible only for cart business logic. It shouldn't know which frontend clients are connected or manage WebSocket connections. The Gateway already acts as the single entry point for the application, so it is the appropriate place to maintain Socket.IO connections. The Cart Service simply publishes a cart.updated event, and the Gateway consumes it and notifies connected clients."
+
+Cart Service -> RabbitMQ -> Gateway -> Socket.IO -> Frontend
+      
+
+
+Q2. RabbitMQ is down. User clicks Add to Cart.
+
+The event is not published.
+
+What happens?
+✅ Cart is saved.
+❌ Real-time UI update doesn't happen.
+✅ If the user refreshes the page, the cart is loaded correctly from MongoDB.
+
+"RabbitMQ is only used for asynchronous notifications in my project. The cart operation itself is completed before the event is published. If RabbitMQ is unavailable, the cart is still stored successfully in MongoDB, but the real-time Socket.IO notification won't be delivered."
+
+Q3. Why does Cart Service call Product Service?
+Because Cart Service needs to verify:
+
+Product exists.
+Product is active.
+Price is correct (depending on implementation).
+
+Q4. Product Service is down.
+
+Cart Service cannot validate the product.
+
+Should it save the cart?
+No, Return:503 Service Unavailable
+
+Q5. Why does Gateway verify JWT?
+"The API Gateway centralizes authentication. It verifies the JWT once, extracts the user identity, and forwards the customer context to downstream services. This avoids duplicating JWT verification logic across every microservice."
+
+Q6. Why RabbitMQ? Why not HTTP?
+http will creates tight coupling.
+"RabbitMQ decouples the producer from the consumer. The Cart Service publishes an event without knowing which services will consume it. This makes the architecture more extensible."
+
+Q7. Why are these events?
+"Something already happened."
+cart.updated
+order.created
+payment.completed
+
+Q8. Why Fanout Exchange?
+fanout exchange because the same event can be useful to multiple consumers.
+
+Today: Gateway
+Tomorrow: Analytics,Inventory,Email
+
+Fanout broadcasts the event to all bound queues.
+
+Q9. Tell me in one sentence why RabbitMQ exists in your project.?
+"RabbitMQ is used only for asynchronous event notifications. After a business operation successfully completes, the service publishes an event so interested consumers, such as the Gateway for real-time Socket.IO updates or future analytics and notification services, can react without tightly coupling the services."
+
+--------------------------------------------------------------------Task schedular ------------------------------------------:
+
+"Initially, I built the scheduler from scratch to understand the fundamentals—implementing an in-memory queue, a scheduler, round-robin worker assignment, and an event bus. Once I understood those concepts, I migrated to RabbitMQ to replace the custom infrastructure with a production-grade message broker."
+
+Part 1 → Explain your scheduler (your original work)
+
+"This project is an asynchronous task scheduling backend. The admin creates tasks through an API. Instead of processing them synchronously, tasks are persisted in MongoDB and published to RabbitMQ. Multiple worker consumers subscribe to the queue and process tasks asynchronously. This decouples API requests from task execution and allows workers to scale independently."
+
+Part 2 → Explain retries (RabbitMQ feature)
+
+"If task processing fails, the worker negatively acknowledges (NACKs) the message. RabbitMQ routes it to a Dead Letter Exchange, which forwards it to a retry queue configured with a TTL. After the TTL expires, RabbitMQ automatically routes the message back to the main processing queue for another processing attempt."
+
+Part 3 → Explain why this is better
+"Earlier I had implemented scheduling, retries, and worker assignment myself using an in-memory queue, scheduler, and event bus. After learning RabbitMQ, I replaced much of that infrastructure with RabbitMQ because it already provides durable queues, acknowledgements, retries, dead-lettering, and better scalability."
+
+--------------------Docker--------------------
+1. What is Docker?
+
+Docker is a containerization platform that packages an application along with its dependencies, libraries, and runtime into a lightweight container, ensuring consistent execution across different environments.
+
+2. What is a Container?
+
+A container is a running instance of a Docker image. 
+docker image -> docker run -> Container
+
+3. What is a Docker Image?
+
+A Docker image is a read-only blueprint containing the application code, dependencies, libraries, and runtime required to create containers.
+Class- Object || Image-Conatiner
+
+4. Difference between Image and Container
+Blueprint, running Application
+
+5. Why Docker?
+
+"It eliminates the 'works on my machine' problem by packaging the application and its dependencies into a portable container."
+
+6. Commands
+Build image : docker build -t ecommerce .
+Delete image : docker rmi imageId
+Run container : docker run -p 5000:5000 ecommerce
+Stop container : docker stop containerID
+
+List containers : docker ps
+List images : docker images
+
+7. Explain your Dockerfile
+FROM node:20  // base Image
+
+WORKDIR /app  // sets current working directory
+
+COPY package*.json .  // copies files
+
+RUN npm install    // executes while building image i.e RUN npm install	
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npm","start"]  // Executed when container starts.
+
+//-------------- CICD Using GitHub actions ------------
+explain flow :
+"Our code is hosted on GitHub. Whenever code is pushed to the main branch, GitHub Actions runs the CI pipeline by installing dependencies, running tests, and validating the build. If everything succeeds, it deploys the application to our server automatically. For deployments to an EC2 instance, GitHub Actions connects securely over SSH and restarts the application."
+
+"SSH (Secure Shell) is a secure protocol used to remotely connect to a server and execute commands. In CI/CD pipelines, GitHub Actions often uses SSH to connect to an EC2 instance and automate deployment tasks such as pulling the latest code, restarting services, or updating Docker containers."
+
+Creating a CICD flow using GitHub actions :
+- On project, on root dir create 
+  - .GitHub (folder)
+       workflows (folder)
+        -deploy.yml (this will we treated as action, we can give any name to this)
+
+
+Developer
+    │
+git push
+    │
+    ▼
+GitHub
+    │
+    ▼
+GitHub Actions
+    │
+    ├── Install dependencies
+    ├── Run tests
+    ├── Build application
+    ├── Build Docker image (optional)
+    └── SSH into EC2
+            │
+            ▼
+git pull / docker compose pull
+docker compose up -d
+            │
+            ▼
+Application updated
+
+
+Where does the SSH key come from?
+"When creating an EC2 instance, AWS lets us create or select a key pair. AWS stores the public key on the EC2 instance and downloads the private key (.pem) to our local machine. To allow GitHub Actions to connect securely, we store the private key as a GitHub Secret. During the workflow, the SSH action uses that private key to authenticate with the EC2 server."
+
+"uses references a reusable GitHub Action. An Action is a packaged piece of automation that someone has already implemented. For example, actions/checkout checks out the repository, actions/setup-node installs Node.js, and appleboy/ssh-action establishes an SSH connection to a remote server so I can execute deployment commands."
+
+deploy.yaml file in root project :
+
+name: Deploy code on EC2
+on:                  // run this action on, push, when someone push on this branch
+  push:
+    branches: [main]
+
+jobs:            // we are telling we have some jobs like deploy
+  deploy:
+    runs-on: ubuntu-latest    // this GitHub action is runs on service ubuntu, specifying were git action runs
+    steps:
+      - Checkout code
+      - Install Node
+      - npm install
+      - npm test
+      - SSH into EC2
+      - docker compose up -d
+
+example from project :
+
+
+name: Deploy code on EC2
+on:                
+  push:
+    branches: [main]
+
+jobs:          
+  deploy:
+    runs-on: ubuntu-latest  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4       // predefine action from git action team
+      
+      - name: SSH into EC2
+        uses: appleboy/ssh-action@v1   // predefine action from git action team
+        with:
+          host: ${{ secrets.EC2_HOST }} // this is ip address of EC2 app, and stored in github actions
+          username: ubuntu or ec2-user 
+          key: ${{ secrets.EC2_SSH_KEY }} // we will get this key from EC2
+          
+          
+          script: |
+                cd /home/ubuntu/ecommerce-microservices (this path we will get if we do deployment on aws, ubuntu
+                git pull
+                docker compose up -d --build
+
+
+Can we use CI/CD with serverless applications?
+"Yes. CI/CD works with both traditional and serverless applications. The CI part—building and testing the code—is similar. The CD part differs. For a traditional application, the pipeline might SSH into an EC2 instance to deploy. For a serverless application, the pipeline deploys directly to services like AWS Lambda using AWS APIs or deployment tools, so SSH isn't needed."
