@@ -1,0 +1,63 @@
+// non serverless : AWS EC2 (It will always run, for 0 traffic also we are going to be charged)
+// elastic cloud
+1. Go to AWS, search for EC2
+1. Click on Launch servers
+- We have to select operating system
+- We have to select RAM
+- We have to select networking, firewall
+Note :Always create Key pair name
+
+2. Get a IP address for our server from Elastic IPS
+Note this IPs is only free if we have created it and used it. If we are not using a created ip aws will charge money for that. So if we are not using any ip just free the
+
+3. Connect created Instance through SSL Client to our local, or we can use EC2 instance connect (it connects on browser cli)
+
+how to push code to EC2 instance :
+A : SSH + Git Pull
+
+Your Laptop
+     │
+git push
+     │
+     ▼
+GitHub
+     │
+     ▼
+SSH into EC2
+     │
+     ▼
+git pull
+npm install (if needed)
+pm2 restart app
+
+Now Commands on EC2:
+
+cd /home/ubuntu/my-project
+git pull
+npm install
+pm2 restart app
+
+B : Option 2: GitHub Actions (Recommended)
+
+Your Laptop
+     │
+git push
+     │
+     ▼
+GitHub
+     │
+     ▼
+GitHub Actions
+     │
+SSH into EC2
+     │
+     ▼
+git pull
+docker compose up -d --build
+
+C : Option 3: SCP (Copy Files)
+NOTE : This is useful for quick experiments, but it's not common for production.
+
+Instead of using Git, you can copy your local files directly.
+
+scp -i my-key.pem -r . ubuntu@EC2-IP:/home/ubuntu/my-project

@@ -1,0 +1,13 @@
+// AWS IAM ( Identity & Access Management)
+We can create multiple users and can give them different-different access.
+Use-case : Suppose we have 100 devlopers, and we want to give them access to diff services. for them we can create multiple iam user with desired access.
+
+3 Main services : IAM users, IAM user group, policies
+
+IAM users: used to create user, for every user we will be giving custom permissions
+Note : We are only attach 10 permissions
+
+IAM user group solves the problem of creating multiple user and assigning them same permissions
+IAM user group : We can create a group and in that we can add multiple user 
+
+policies : Specify custom permissions from our own, and then we can add it to any group or user 

@@ -13,6 +13,7 @@ eg : api gateway [
 
 
 // non serverless : AWS EC2 (It will always run, for 0 traffic also we are going to be charged)
+// elastic cloud
 1. Go to AWS, search for EC2
 1. Click on Launch servers
 - We have to select operating system
