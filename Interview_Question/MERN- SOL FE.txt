@@ -275,7 +275,7 @@ const result = Object.assign({}, obj1, obj2);
 
 console.log(result); // { a: 1, b: 2 }
 
-QUES 9. Create promise in js.
+QUES 9. Promise types & Create promise in js.
 
 Network calls are asynchronous operations because they take time.
 Promises are JavaScript's way of representing the future result of those operations.
@@ -579,36 +579,35 @@ Lighthouse
 Chrome Performance tab
 
 QUES 5.When to use react memo, useMemo and useCallBack
-QUES 7.Life cycle methods in react
-QUES 8.Comparison of hooks with life cycle method
+QUES 6.Life cycle methods & Comparison of hooks with life cycle method
 ✅ ANS :
+"A React component lifecycle consists of three phases: Mounting, Updating, and Unmounting." 
+ -During mounting, the component is created, rendered, and effects with an empty dependency array run. 
+ -During updating, changes to state or props trigger a re-render, and effects with matching dependencies run after React first executes the cleanup from the previous effect. 
+ -During unmounting, React removes the component from the DOM and runs any cleanup functions returned from useEffect, such as clearing timers or removing event listeners.
+
+unmount is used for : Clear intervals, Remove event listeners, Close Web-Sockets, Abort API requests
+
 | Class Method           | Equivalent Hook                                 |
 | ---------------------- | ----------------------------------------------- |
 | `componentDidMount`    | `useEffect(() => { ... }, [])`                  |
 | `componentDidUpdate`   | `useEffect(() => { ... }, [dependency])`        |
 | `componentWillUnmount` | `useEffect(() => { return () => cleanup }, [])` |
 
-useEffect(() => {
-  // runs on mount
-  fetchData();
+    const [count, setCount] = useState(0);
+    
+    useEffect(() => console.log("Render"),[]);
 
-  return () => {
-    // runs on unmount
-    clearInterval(timer);
-  };
-}, []);
+    useEffect(() =>  console.log("Effect"), [count]);
+
+    useEffect(() => {
+   const timer = setInterval(() => console.log("tick"), 1000);
+
+   return () => clearInterval(timer); // cleanup
+                   }, []);
+
 
 example : clearInterval(timer) ensures there's no memory leak or stray interval running after the component is gone.
-
-useEffect(() => {
-  const timer = setInterval(() => {
-    console.log("tick");
-  }, 1000);
-
-  return () => {
-    clearInterval(timer); // cleanup
-  };
-}, []);
 
 Logs "tick" every second
 
@@ -616,7 +615,7 @@ When the component unmounts, the interval is cleared
 
 
 
-QUES 9.Explain interceptor in axios in react.
+QUES 7.Explain interceptor in axios in react.
 ✅ ANS : An interceptor is like a middleware. It intercepts(catch) every request or response before it is sent or received.
 There are two types:
 Request Interceptor – runs before the request is sent.
@@ -668,7 +667,7 @@ axios.interceptors.response.use(
 export default api;
 
 
-QUES 10.Difference between PUT and PATCH request
+QUES 8.Difference between PUT and PATCH request
 ✅ ANS :
 Purpose of PUT:
 Replaces the entire resource with the data provided.
@@ -684,7 +683,7 @@ You want to update just one or a few fields without altering the rest.
 
 
 
-QUES 11.Difference between useEffect and useLayoutEffect in react
+QUES 9.Difference between useEffect and useLayoutEffect in react
 ✅ ANS :In React, useEffect and useLayoutEffect are both hooks used to perform side effects in functional components, but they differ in timing and behavior.
 Only use useLayoutEffect when you need to read layout or synchronously manipulate DOM before the browser repaints.
 
@@ -697,16 +696,16 @@ Key Differences:
 | Performance | More performant               | Less performant (can cause jank if misused) |
 
 
-QUES 12.How you will call the apis parallelly in react 
+QUES 10.How you will call the apis parallelly in react 
 ✅ ANS : Using Promise.all()
 When APIs are independent (don’t rely on each other’s result)
 When you need faster performance by reducing wait time.
 ❌ Fails all if one fails (unless handled individually)
 
 
-QUES 13.What is Virtual dom in react, how it works
+QUES 11.What is Virtual dom in react, how it works
 
-QUES 14.How to pass data from child to parent
+QUES 12.How to pass data from child to parent
 ✅ ANS: by using callback function, passing callback function as a prop from the parent to the child.
 
 Eg : 
@@ -728,7 +727,7 @@ function Child({ onSendData }) {
   return <button onClick={sendData}>Send Data to Parent</button>;
 }
 
-QUES 15.Virtualization in React
+QUES 13.Virtualization in React
 ✅ ANS:Virtualization in React is a performance optimization technique where only the items visible on the screen are rendered, instead of rendering the entire list.
 
 "Virtualization is a React performance optimization technique where only the items currently visible in the viewport are rendered instead of the entire list. As the user scrolls, off-screen items are unmounted and newly visible items are rendered. This significantly reduces the number of DOM nodes, lowers memory usage, improves initial render time, and provides smoother scrolling for large datasets. Popular libraries include react-window and @tanstack/react-virtual."
@@ -751,7 +750,7 @@ When you scroll, React removes the items that go off-screen and renders the next
 
 Although the list appears to contain all 100,000 items, at any moment there may only be around 10–20 DOM elements.
 
-QUES 15.Throttling and debouncing in React
+QUES 14.Throttling and debouncing in React
 ✅ ANS: Throttling and debouncing are techniques used in React (and general JavaScript) to control how frequently a function is executed, especially for performance optimization — like in scroll, resize, input, or button click events.
 
 🔁 Debouncing
@@ -808,9 +807,31 @@ function clickButton() {
     console.log("clicked");
 }
 
+// debounce using js
 
+function debounce(cb, delay) {
+    let timer;
 
-Debounce :
+    return function () {
+
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            cb();
+        }, delay);
+
+    };
+}
+
+const search = () => console.log("Searching...");
+
+const debouncedSearch = debounce(search, 3000);
+
+debouncedSearch();
+debouncedSearch();
+debouncedSearch();
+
+Debounce using react:
 
   const [data, setData] = useState("");
   const [debounce, setDebounce] = useState("");
@@ -837,7 +858,7 @@ inside return :
 
 
 
-QUES 16.package.json and package.lock.json
+QUES 15.package.json and package.lock.json
 ✅ ANS:
   | Feature                | `package.json`                 | `package-lock.json`               |
 | ---------------------- | ------------------------------ | --------------------------------- |
@@ -848,7 +869,7 @@ QUES 16.package.json and package.lock.json
 | Use in version control | Yes                            | Yes (must be committed)           |
 
 
-QUES 17. what will happen if we have forget to put await in front of api in react js
+QUES 16. what will happen if we have forget to put await in front of api in react js
 ✅ ANS: the result will be a Promise instead of the actual resolved data. i.e Promise {<pending>}
 
 What goes wrong:
@@ -862,12 +883,11 @@ const getData = async () => {
   console.log(res); // Logs: Promise {<pending>}
 };
 
-QUES 18. What is currying in js or react
-✅ ANS: Currying is a technique in which a function returns another function to handle one argument at a time, and allowing arguments to be passed separately rather than all at once.
+QUES 17. What is currying in js or react
+✅ ANS: "Currying creates a reusable function with some arguments already fixed."
+Currying help us to create a new function by pre-filling some arguments of an existing function.
 
-Currying is a technique in JavaScript where a function doesn't take all arguments at once, but instead takes them one by one — each returning a new function that takes the next argument.
-
-"Currying converts a function with multiple arguments into a sequence of functions that each take one argument. We use it to create reusable, specialized functions by fixing some arguments in advance. It's commonly used in React event handlers, Express middleware (like authorize('ADMIN')), logging utilities, validators, and API wrappers. Currying also improves function composition and reduces repeated arguments."
+curry configure common values once and reuse them
 
 js- example :
 
@@ -923,6 +943,20 @@ api("/users");
 api("/orders");
 api("/products");
 
+suppose we want pass 1 more parameter in request(), that is version
+just we have to add it in main curry fn, and you create the API once:, not every caller place so all call sites remain exactly the same:
+
+const request = (baseUrl) => (token) => (apiVersion)=> (endpoint) => {
+    console.log(baseUrl, token, endpoint);
+};
+
+const api = request(BASE_URL)(token)("v1);
+
+api("/users");
+api("/orders");
+api("/products");
+
+
 eg 2: without curry
 function log(level, message) {
     console.log(`[${level}] ${message}`);
@@ -952,7 +986,7 @@ const handleClick = (id) => () => {
 <button onClick={handleClick(5)}>Click</button>
 
 
-Ques 19. Difference between oauth and jwt
+Ques 18. Difference between oauth and jwt
 ✅ ANS: OAuth is an authorization framework that allows users to log in using third-party providers like Google or GitHub. JWT is a token format used to securely store user information after authentication. A common flow is: user logs in with Google using OAuth, then our backend generates a JWT for future authenticated requests.
 
 | OAuth                                       | JWT                                                |
@@ -961,7 +995,7 @@ Ques 19. Difference between oauth and jwt
 | Used for third-party login (Google, GitHub) | Used to identify/authenticate users                |
 | Grants permission to access resources       | Stores user information securely in a signed token |
 
-Ques 20. Difference between server and serverless
+Ques 19. Difference between server and serverless
 ✅ ANS: In a traditional server architecture, we manage the server, deployment, and scaling ourselves. In serverless architecture, cloud providers like AWS Lambda manage the infrastructure, automatically scale the application, and we pay only for the execution time of our functions.
 
 | Server                | Serverless                                |
@@ -971,3 +1005,71 @@ Ques 20. Difference between server and serverless
 | Manual scaling        | Automatic scaling                         |
 | Pay for server uptime | Pay only for execution time               |
 
+QUES 20.What is React query (TanStack Query) & useMutation?
+✅ ANS: React Query (now called TanStack Query) is a library that helps you fetch, cache, synchronize, and update server data in React applications.
+
+"React Query, now known as TanStack Query, is a library for managing server state in React applications. It simplifies data fetching by handling caching, loading and error states, background refetching, and request deduplication. Instead of writing useEffect and useState for every API call, we use useQuery to fetch data and useMutation for create, update, or delete operations. It also caches responses using query keys and can automatically refetch stale data, making applications faster and reducing unnecessary network requests."
+
+
+React's useState is for client state, while React Query is for server state.
+In useState and useEffect we have to manage: Loading state, Error state, API call, Caching, Refetching, Duplicate requests
+That's a lot of boilerplate.
+
+with recat query:
+
+import { useQuery } from "@tanstack/react-query";
+
+ const { data, isLoading, error } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => fetch("/api/users").then(res => res.json())
+  });
+
+Fetching data uses useQuery. Changing data uses useMutation.
+
+const mutation = useMutation({
+  mutationFn: (newUser) =>
+    fetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify(newUser)
+    })
+});
+After a successful mutation, you often invalidate the related query so React Query fetches fresh data.
+
+queryClient.invalidateQueries({
+  queryKey: ["users"]
+});
+
+QUES 21.What is Microfrontend Architecture & the advantages of Microfrontends?
+✅ ANS: Microfrontend Architecture is a frontend design approach where a large application is divided into smaller, independently developed and deployed frontend modules, similar to how microservices split a backend. 
+Each module, such as Login, Cart, or Product, can be owned by a separate team and deployed independently.
+A Host or Shell application composes these modules into a single user experience. This architecture improves team autonomy, scalability, and deployment speed, but introduces challenges like shared state management, consistent UI, and communication between microfrontends. Common implementation techniques include Webpack Module Federation and Single-SPA
+
+" Host or Shell application composes all the microfrontends at runtime. The browser first loads the Host application, which then dynamically fetches the individual microfrontends from their deployment URLs. These are rendered together as a single application, so the user experiences one seamless website."
+
+
+                    Browser
+                       │
+                Shell / Host App
+                       │
+     ┌──────────┬──────────┬──────────┬
+     │             │              │             │
+  Login MF        Product MF  Cart MF         Profile MF
+
+Each module is its own React application. i.e Each team owns its frontend.
+
+Frontend
+
+├── Login Team
+│      └── login-app
+│
+├── Product Team
+│      └── product-app
+│
+├── Cart Team
+│      └── cart-app
+│
+├── Payment Team
+│      └── payment-app
+│
+└── Profile Team
+       └── profile-app

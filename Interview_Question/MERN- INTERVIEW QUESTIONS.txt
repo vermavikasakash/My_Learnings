@@ -5,6 +5,8 @@ CSS-
 4.What is aria attribute in context of aria-label in html
 
 JS/TS-
+1.What is v8, What is hoisting?, What is a closures ?, What is a Lexical Scope?, 
+  What is Garbage collector ?, What is event Delegation?
 1.Shallow and deep copy ( structuredClone(), JSON.parse(JSON.stringify()) , _.cloneDeep() Lodash) in js
 2.Difference between type and interface in Typescript. When would you choose one over the other?
 3.When to use rest parameter and spread parameter, also tell the difference
@@ -17,6 +19,8 @@ JS/TS-
 10.what are the Features introduced  in ES6
 11.Difference between Stack and Queue. Real time example
 12.What is mixins in js
+13.What is object prototype.
+14.Memory leak in js 
 
 REACT-
 1.In react how we can call an api before rendering the ui
@@ -24,22 +28,26 @@ REACT-
 3.When to use redux store and context api
 4.How to optimize the react application
 5.When to use react memo, useMemo and useCallBack
-7.Life cycle methods in react
-8.Comparison of hooks with life cycle method
-9.Explain interceptor in axios in react.
-10.Difference between PUT and PATCH request
-11.Difference between useEffect and useLayoutEffect in react
-12.How you will call the apis parallelly in react 
-13.What is Virtual dom in react, how it works
-14.Difference between Promise.race and promise.all
-15.How to pass data from child to parent
-16.Throttling and debouncing in React
-17.package.json and package.lock.json
-18. what will happen if we have forget to put await in front of api in react js
-19.What is Microfrontend Architecture?
-20.What are the advantages of Microfrontends?
+6.Life cycle methods & Comparison of hooks with life cycle method
+7.Explain interceptor in axios in react.
+8.Difference between PUT and PATCH request
+9.Difference between useEffect and useLayoutEffect in react
+10.How you will call the apis parallelly in react 
+11.What is Virtual dom in react, how it works
+12.How to pass data from child to parent
+13.Virtualization in React
+14.Throttling and debouncing in React
+15.package.json and package.lock.json
+16.what will happen if we have forget to put await in front of api in react js
+17.What is currying in js or react
+18. Difference between oauth and jwt
+19.Difference between server and serverless
+20.React query (TanStack Query)
+21.What is Microfrontend Architecture & the advantages of Microfrontends?
+
 NODE JS-
-1.What is close callbacks in node
+ What is a Proxy?
+1. What is callback & close callbacks in node
 2.What is cluster in node js
 3.What is setImmediate in node
 4.What is piping in node js
@@ -53,77 +61,11 @@ NODE JS-
 12.Call back hell in node js
 13.Micro and macro task in nodejs
 14.Event loop in node.js
+15.json web token, access token vs refresh token
+16.What are headers ?
+17.what is Same-Origin Policy (SOP) & CORS ?
+18. what is Express & middleware
 
-SOL : 
-
-Node.js child_process module creates separate OS processes. 
-
-three ways to create new processes: exec(), fork(), and spawn()
-
-exec() is used for small shell commands and buffers output in memory. 
-spawn() is used for streaming large outputs efficiently. 
-fork() is a specialized version for spawning Node.js processes with IPC communication support between parent and child processes.
-
-1. exec()
-Used to: execute shell commands
-Behavior:
-buffers entire output in memory
-callback receives complete result
-
-Good for: small output commands
-
-Example: exec("ls", (err, stdout) => {})
-
-Problem: not good for huge output because buffering can overflow memory
-Real examples:
-Git commands
-Zip/unzip files
-ImageMagick commands
-FFmpeg commands
-Deployment scripts
-
-2. spawn()
-
-Used to:
-start long-running processes
-stream large output data
-
-Behavior:
-returns streams (stdout, stderr)
-does NOT buffer entire output
-
-Good for:
-large data
-real-time streaming
-
-Example:
-const child = spawn("npm", ["run", "dev"]);
-
-Real examples:
-video processing
-log streaming
-ML model execution
-large file operations
-real-time stdout reading
-
-3. fork()
-Special version of spawn() for Node.js files.
-Used for:
-creating Node.js child workers
-IPC (inter-process communication)
-
-Key feature: Parent ↔ Child communication via message passing
-
-Example:
-child.send()
-process.on("message")
-
-Real examples:
-background jobs
-email workers
-notification workers
-queue consumers
-CPU-heavy isolated tasks
 
 MONGO DB / SQL -
 1.Difference between Sql and NoSQL
@@ -133,6 +75,7 @@ MONGO DB / SQL -
 5.How you will achieve joins in MongoDb
 6.What is aggregate in MongoDb
 7.What is sharding
+8.When do you use transactions?
 
 // Real time questions 
 1. Tell me about yourself.
@@ -156,7 +99,7 @@ MONGO DB / SQL -
 19. What are Pure Components, Higher-Order Components, Controlled and Uncontrolled Components in React?
 20. How would you implement real-time updates (e.g., WebSockets)?
 21. Have you deployed MERN apps on cloud platforms like AWS or Azure?
-22. 1 DSA Coding Question – 30 minutes given to solve
+
 
 
 

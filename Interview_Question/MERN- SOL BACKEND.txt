@@ -30,9 +30,57 @@ usecases: Load balancing, Security, Caching,Routing
 
 The client thinks: "I'm talking to one server.",But the reverse proxy forwards the request to one of many backend servers.
 
-QUES 1 : What is close callbacks in node
-✅ ANS: close callback is a function that is called/invoked when a resource is closed, such as a file, socket, or HTTP connection.
-A "close callback" is simply a function that you provide to execute after a resource (stream, connection, server) is closed — either by listening to a .on('close', callback) event or passing a callback to a .close(callback) method.
+QUES 1 : What is callback and close callbacks in node
+✅ ANS: 
+"A callback is a function passed as an argument to another function, which is executed later. In Node.js, callbacks are widely used for asynchronous operations like file I/O, database queries, and network requests."
+
+const fs = require("fs");
+
+fs.readFile("test.txt", "utf8", (err, data) => {
+    if (err) {
+        console.log(err);
+        return;
+    }
+
+    console.log(data);
+});
+
+Here: (err, data) => {} 
+is the callback.
+
+Close callback is a function that is called/invoked when a resource is closed, such as a file, socket, or HTTP connection.
+A "close callback" is simply a function that you provide to execute after a resource (stream, connection, server) is closed — either by listening to event a .on('close', callback) event or passing a callback to a .close(callback) method.
+
+const app = require("express")();
+
+const server = app.listen(3000);
+
+server.on("close", () => {
+    console.log("Server has stopped");
+});
+
+server.close();
+
+//
+const http = require('http');
+
+http.createServer((req, res) => {
+  req.on('close', () => {
+    console.log('HTTP connection closed');
+  });
+  res.end();
+}).listen(3000);
+
+//
+
+const fs = require('fs');
+const stream = fs.createReadStream('file.txt');
+
+stream.on('close', () => {
+  console.log('Stream has been closed.');
+});
+
+//
 
 🔄 Difference Between close and end
 close: Resource is fully closed (file descriptor, connection, etc.).
@@ -45,54 +93,6 @@ The close callback serves several purposes:
 2. *Error handling*: Close callbacks can be used to handle errors that occur when closing a resource.
 3. *Notification*: They provide a way to notify other parts of your application that a resource has been closed.
 
-Examples:
-Here are a few examples of close callbacks in Node.js:
-
-*File close callback:*
-//This is triggered when the stream and its underlying file descriptor are closed.
-```
-const fs = require('fs');
-const stream = fs.createReadStream('file.txt');
-
-stream.on('close', () => {
-  console.log('Stream has been closed.');
-});
-
-```
-
-*Socket close callback:*
-This listens to the close event on a socket, indicating that the client disconnected
-```
-const net = require('net');
-
-const server = net.createServer((socket) => {
-  socket.on('close', () => {
-    console.log('Socket closed');
-  });
-});
-```
-
-*HTTP connection close callback:*
-```
-const http = require('http');
-
-http.createServer((req, res) => {
-  req.on('close', () => {
-    console.log('HTTP connection closed');
-  });
-  res.end();
-}).listen(3000);
-```
-
-Best practices:
-When using close callbacks:
-
-1. *Always handle errors*: Make sure to handle any errors that may occur when closing a resource.
-2. *Perform necessary cleanup*: Use the close callback to perform any necessary cleanup tasks.
-3. *Keep the callback concise*: Keep the close callback concise and focused on the necessary tasks.
-Difference : 
-Callback: General-purpose function used in any async operation.
-Close callback: Special callback triggered only when a resource like a stream or socket is closed.
 
 QUES 2.What is cluster in node js
 ✅ ANS:In Node.js, a cluster is a group of worker processes that share the same server port. Clustering allows you to take advantage of multi-core processors and scale your application horizontally.
@@ -157,17 +157,25 @@ Execution of event loop :
 ├────────────────────────┤
 │        Timers          │ ← setTimeout, setInterval
 ├────────────────────────┤
-│   Pending Callbacks    │
+│   Pending Callbacks    │                       // Executes deferred system-level /I/O callbacks- like error
 ├────────────────────────┤
-│     Idle, Prepare      │ (internal)
+│     Idle, Prepare      │ (internal)            // Internal Node.js preparation work
 ├────────────────────────┤
-│         Poll           │ ← I/O callbacks
+│         Poll           │ ← I/O callbacks       // Executes I/O callbacks and waits for new I/O
 ├────────────────────────┤
-│         Check          │ ← setImmediate
+│         Check          │ ← setImmediate        // Executes setImmediate() callbacks
 ├────────────────────────┤
-│    Close Callbacks     │ ← socket.on('close')
+│    Close Callbacks     │ ← socket.on('close')  // Executes 'close' event callbacks
 └────────────────────────┘
 
+Note : Pending Callbacks are all system-level operations, not normal JavaScript functions.
+Examples include: Some TCP errors , certain socket callbacks, Some DNS-related callbacks, Low-level libuv callbacks that Node defers
+
+A TCP connection fails or socket gets an error or some low-level system callback needs to be deferred.Instead of running it immediately,
+ Node says:"I'll execute this on the next loop."
+
+Pending callbacks that couldn't or shouldn't be executed immediately, so Node postpones them until the next event loop iteration.
+eg. patient 1 visited doctoc, doctor recommended him medicine, now patient 2 comes in meanwhile patient 1 purchased the medicine and came back, so doctor schedules him next but finishes the current task
 
 QUES 4 :What is piping in node js
 ANS: piping is a mechanism that allows you to connect multiple streams together, enabling the output of one stream to be used as the input for another stream.
@@ -577,7 +585,7 @@ Node.js provides several alternatives to callbacks, including:
 - *Promises*: A promise represents a value that may not be available yet. Promises provide a more structured approach to asynchronous programming.
 - *Async/await*: Async/await is a syntax sugar on top of promises that makes asynchronous code look and feel synchronous.
 
-Ques : 
+Ques 18 : 
 Express is a minimal Node web framework for routing and middleware that keeps servers simple. Why? Less boilerplate, faster APIs.
  Ques : Middleware in express :
 "Middleware in Express is a function that executes between receiving an HTTP request and sending the HTTP response. It has access to the request, response, and the next() function.
