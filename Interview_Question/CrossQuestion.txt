@@ -172,7 +172,7 @@ on:                  // run this action on, push, when someone push on this bran
 
 jobs:            // we are telling we have some jobs like deploy
   deploy:
-    runs-on: ubuntu-latest    // this GitHub action is runs on service ubuntu, specifying were git action runs
+    runs-on: ubuntu-latest    // this GitHub action is runs on service ubuntu, specifying where git action runs
     steps:
       - Checkout code
       - Install Node

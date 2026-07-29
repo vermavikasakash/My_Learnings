@@ -106,7 +106,8 @@ What is a closures ?
 A closure is a function that remembers and can access variables from its lexical (outer) scope even after the outer function has finished executing. JavaScript achieves this by preserving the function's lexical environment as long as the inner function still references it.
 
 What is a Lexical Scope?
-Lexical scope means a function's scope is determined by where it is defined in the source code, not where it is called.
+Lexical scope means a function determines which variables it can access based on where fn is defined in the source code, not where it is called. 
+This is why inner functions can access variables from their outer functions, and it forms the foundation of closures.
 
 What is Garbage collector ?
 A garbage collector is a built-in memory management component of the JavaScript engine that tracks allocated memory, determines which objects are no longer reachable, and reclaims that memory automatically.
@@ -174,10 +175,25 @@ Key differences:
 
 QUES 4.Difference between call, apply and bind method in js
 
+"this" is a keyword that refers to the object that is executing the current function. Its value is determined by how the function is called, not where it is defined. 
+this depends on the call site (how the function is invoked).
+const person1 = {
+    name: "Vikas",
+    greet() {
+        console.log(this.name);
+    }
+};
+// person1.greet; // "vikas
+let fn = person1.greet;
+fn(); // ud
+
+
+Arrow functions do not have their own this. They inherit it from their surrounding scope.
+
 The `call`, `apply`, and `bind` methods in JavaScript are used to manipulate the `this` keyword and function arguments."
 
 "call(), apply(), and bind() are used to explicitly control the value of this inside a function.
- call() invokes the function immediately and accepts arguments individually after the this object. 
+ call() invokes the function immediately and accepts arguments individually (like list) after the this object. 
  apply() also invokes the function immediately but expects the arguments as an array. 
  bind() does not execute the function immediately; instead, it returns a new function with this permanently bound, which can be executed later."
 
@@ -579,6 +595,78 @@ Lighthouse
 Chrome Performance tab
 
 QUES 5.When to use react memo, useMemo and useCallBack
+
+| Hook/API        | What it memoizes | Prevents                        |
+| --------------- | ---------------- | ------------------------------- |
+| **React.memo**  | Component        | Unnecessary component re-render |
+| **useMemo**     | Value            | Expensive recalculations        |
+| **useCallback** | Function         | Function recreation             |
+
+React.memo is a higher-order component that memoizes a component and prevents unnecessary re-renders when its props haven't changed.
+function App() {
+    const [count, setCount] = useState(0);
+
+    return (
+        <>
+            <button onClick={() => setCount(count + 1)}>
+                Increment
+            </button>
+
+            <Child />
+        </>
+    );
+}
+
+function Child() {
+    console.log("Child rendered");
+
+    return <h1>Child</h1>;
+}
+
+App renders -> Child renders (Even though Child doesn't use count.)
+
+fixes :--
+const Child = React.memo(function Child() {
+    console.log("Child rendered");
+
+    return <h1>Child</h1>;
+});
+
+2. useMemo : useMemo memoizes the result of an expensive computation and recomputes it only when its dependencies change.
+
+Suppose sorting 10,000 products.
+
+const sortedProducts = products.sort(...);
+
+This runs on every render.
+
+fixes :--
+
+const sortedProducts = useMemo(() => {
+    return products.sort(...);
+}, [products]);
+
+Now React recalculates only when products changes.
+
+3. useCallback : Memoizes a function so the same function reference is reused across renders until its dependencies change.
+
+function App() {
+    const [count, setCount] = useState(0);
+
+    const handleClick = useCallback(() => {
+        console.log("Clicked");
+    }, []);
+
+    return <Child onClick={handleClick} />;
+}
+
+const Child = React.memo(function Child({ onClick }) {
+    console.log("Child Render");
+
+    return <button onClick={onClick}>Click</button>;
+});
+
+
 QUES 6.Life cycle methods & Comparison of hooks with life cycle method
 ✅ ANS :
 "A React component lifecycle consists of three phases: Mounting, Updating, and Unmounting." 
@@ -612,8 +700,6 @@ example : clearInterval(timer) ensures there's no memory leak or stray interval 
 Logs "tick" every second
 
 When the component unmounts, the interval is cleared
-
-
 
 QUES 7.Explain interceptor in axios in react.
 ✅ ANS : An interceptor is like a middleware. It intercepts(catch) every request or response before it is sent or received.
@@ -728,7 +814,7 @@ function Child({ onSendData }) {
 }
 
 QUES 13.Virtualization in React
-✅ ANS:Virtualization in React is a performance optimization technique where only the items visible on the screen are rendered, instead of rendering the entire list.
+✅ ANS: Virtualization in React is a performance optimization technique where only the items visible on the screen are rendered, instead of rendering the entire list.
 
 "Virtualization is a React performance optimization technique where only the items currently visible in the viewport are rendered instead of the entire list. As the user scrolls, off-screen items are unmounted and newly visible items are rendered. This significantly reduces the number of DOM nodes, lowers memory usage, improves initial render time, and provides smoother scrolling for large datasets. Popular libraries include react-window and @tanstack/react-virtual."
 
@@ -860,14 +946,16 @@ inside return :
 
 QUES 15.package.json and package.lock.json
 ✅ ANS:
-  | Feature                | `package.json`                 | `package-lock.json`               |
-| ---------------------- | ------------------------------ | --------------------------------- |
-| Purpose                | Define project and deps        | Lock exact versions of deps       |
-| Editable               | Yes                            | No (auto-generated)               |
-| Version ranges         | Yes (`^1.2.0`, `~1.2.3`, etc.) | No (exact versions)               |
-| Dependency tree        | Top-level only                 | Full tree (including nested deps) |
-| Use in version control | Yes                            | Yes (must be committed)           |
 
+  `package.json`                    | `package-lock.json`                                  
+  --------------------------------- | ---------------------------------------------------- 
+| Defines project metadata          | Records the exact installed dependency tree          |
+| Lists dependency version ranges   | Stores exact versions                                |
+| Can use `^` or `~` version ranges | exact versions                     |
+| Editable by developers            | Generated and maintained by npm                      |
+| Required to install dependencies  | Ensures consistent installations across environments |
+| Dependency tree : Top-level only  | Full tree (including nested deps)
+| Use in version control :Yes       | Yes
 
 QUES 16. what will happen if we have forget to put await in front of api in react js
 ✅ ANS: the result will be a Promise instead of the actual resolved data. i.e Promise {<pending>}

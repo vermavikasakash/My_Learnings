@@ -141,8 +141,7 @@ if (cluster.isMaster) {
 
 
 QUES 3:What is setImmediate in node
-✅ ANS:`setImmediate()` is a function that schedules a callback function to be executed in the next iteration of the event loop.
-This means that the callback will be executed after the current operation is complete, but before any I/O operations or other asynchronous tasks are processed.
+✅ ANS: setImmediate() schedules a callback to run in the Check phase of the next iteration of the Node.js event loop. This phase comes after the Poll phase, where I/O callbacks are executed.
 
 Use cases
 `setImmediate()` is useful in scenarios where you need to execute a callback function after the current operation is complete, but without blocking the event loop. Some common use cases include:
@@ -208,26 +207,15 @@ Piping involves connecting the output of one stream to the input of another stre
 Here's an example of piping:
 
 ```
-const fs = require('fs');
-const zlib = require('zlib');
-// Create a readable stream from a file
-const readStream = fs.createReadStream('input.txt');
+const fs = require("fs");
 
-// Create a transform stream to compress the data
-const compressStream = zlib.createGzip();
+const readStream = fs.createReadStream("input.txt");    // reads the file in chunks.
+const writeStream = fs.createWriteStream("output.txt"); // Create a writable stream to write
 
-// Create a writable stream to write the compressed data to a file
-const writeStream = fs.createWriteStream('output.txt.gz');
+readStream.pipe(writeStream); // Pipe the streams together
 
-// Pipe the streams together
-readStream.pipe(compressStream).pipe(writeStream);
+console.log("File copy started...");
 ```
-
-In this example:
-
-- The `readStream` reads data from the `input.txt` file.
-- The `compressStream` compresses the data using gzip.
-- The `writeStream` writes the compressed data to the `output.txt.gz` file.
 
 The `pipe()` method is used to connect the streams together, creating a pipeline that processes the data in a series of steps.
 
@@ -361,7 +349,7 @@ setImmediate
 
 
 QUES 14 : Event loop in node.js 
-"Node.js runs JavaScript on a single main thread using the V8 engine. When synchronous code executes, it runs directly on the call stack and blocks it until completion. For asynchronous operations, Node.js delegates the work. Some operations, such as file system access and cryptographic functions, are handled by libuv's thread pool, while network I/O relies on the operating system's non-blocking APIs. Once an asynchronous operation completes, its callback is placed into the appropriate event loop queue. The event loop continuously checks whether the call stack is empty. When it is, the event loop moves the next ready callback from the queue to the call stack for execution."
+"Node.js runs JavaScript on a single main thread using the V8 engine. When synchronous code executes, it runs directly on the call stack and blocks it until completion. For asynchronous operations, Node.js delegates the work to libuv. Some operations, such as file system access and cryptographic functions, are handled by thread pool, while network I/O relies on the operating system's non-blocking APIs. Once an asynchronous operation completes, its callback is placed into the appropriate event loop queue. The event loop continuously checks whether the call stack is empty. When it is, the event loop moves the next ready callback from the queue to the call stack for execution."
 
 "All asynchronous operations are coordinated by libuv, but not all of them use the thread pool. File system operations, cryptographic functions, DNS lookups (in many cases), and compression typically use the libuv thread pool. Network I/O and timers do not; they rely on the operating system's non-blocking event notification mechanisms, and libuv simply listens for those events."
 
