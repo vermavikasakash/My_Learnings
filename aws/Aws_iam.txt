@@ -11,3 +11,6 @@ IAM user group solves the problem of creating multiple user and assigning them s
 IAM user group : We can create a group and in that we can add multiple user 
 
 policies : Specify custom permissions from our own, and then we can add it to any group or user 
+
+// simple way to create application
+elastic beanstalk

@@ -1,0 +1,157 @@
+// S3 : (Simple storage service s3)
+In one account we can create upto 100 buckets
+// we can upload meta data
+search for s3, create a bucket, inside bucket we can create folder and inside that we can upload data
+bucket - it will store objects	
+we can do Static website hosting
+inside permission we can create bucket policy
+// we have to add bucket policy so that based on policy any one can open it
+for production use private bucket
+
+------S3 use cases with node js --------
+we will be using pre-signed url to access private s3 object.
+
+pre-signed url contains token & signature
+
+pre-signed url :1) get object  2) put object
+
+A) presigned url to : get object (to make get pre-signed url, we will create an IAM user, to this IAM user we will give get policy access)
+Note : let created user is John, so all the user who are reading this object are reading on behalf of john
+
+ Node js :
+ install @aws-sdk/client-s3
+ install @aws-sdk/s3-request-presiner
+create an IAM user in aws, with any name(project name- eg. ecommerce_node), dont give console or any permission to this user
+inside created user "ecommerce_node", go to its security credentials. create access key by selecting cli (done we got access key)
+
+Note :
+Bucket → The top-level storage container (similar to a drive).
+Key → The unique path/name of the object inside that bucket.
+
+// folder structure
+project/
+│
+├── config/
+│   └── s3Client.js
+│
+├── services/
+│   └── s3Service.js
+│
+├── controllers/
+│
+├── routes/
+│
+└── app.js
+
+1. Create an S3 client
+
+const { S3Client } = require("@aws-sdk/client-s3");
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
+module.exports = s3Client;
+
+2. Get an object from S3
+
+const { GetObjectCommand } = require("@aws-sdk/client-s3");
+const s3Client = require("./config/s3Client");
+
+async function getFile(key) {
+  try {
+    const command = new GetObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: key,
+    });
+
+    const response = await s3Client.send(command);
+
+    return response.Body;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+module.exports = getFile;
+
+Usage: --------
+
+const getFile = require("./getFile");
+
+const stream = await getFile("uploads/profile.jpg");
+
+B) presigned url to : create/post object ----------
+
+Upload an object to S3
+
+  const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+  const { getSignedUrl,} = require("@aws-sdk/s3-request-presigner");
+
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION,
+});
+
+async function generateUploadUrl(req, res) {
+
+    const key =
+        `users/${req.user.id}/${crypto.randomUUID()}-${req.body.fileName}`;
+
+    const command = new PutObjectCommand({
+        Bucket: process.env.BUCKET_NAME,
+        Key: key,
+        ContentType: req.body.contentType,
+    });
+
+    const uploadUrl = await getSignedUrl( s3Client, command, { expiresIn: 300, // 5 minutes } );
+
+    res.json({
+        uploadUrl,
+        key,
+    });
+}
+
+Backend response (json): 
+{
+  "uploadUrl": "https://bucket.s3.amazonaws.com/....",
+  "key": "users/user123/58fd8c91-resume.pdf"
+}
+
+--- client presigned url calls---
+
+POST /api/upload-url
+Authorization: Bearer <jwt>
+
+{
+   "fileName": "resume.pdf",
+   "contentType": "application/pdf"
+}
+
+--- backend verifies it----
+router.post(
+    "/upload-url",
+    authenticateUser,
+    uploadController.generateUploadUrl
+);
+
+--- Client(FE) uploads directly to S3 -------
+
+await fetch(uploadUrl, {
+    method: "PUT",
+    headers: {
+        "Content-Type": file.type,
+    },
+    body: file,
+});
+
+
+
+// s3 other related features
+properties : shows data about bucket region, bucket versioning (used to maintain version of files, note it will increase overall price)
+cloudtrail : it will log all data related to particular bucket
+event notification : we can notify the user some info, here we can attach any lambda fn. like send email to user

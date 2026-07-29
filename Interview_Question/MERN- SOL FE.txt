@@ -112,6 +112,7 @@ What is Garbage collector ?
 A garbage collector is a built-in memory management component of the JavaScript engine that tracks allocated memory, determines which objects are no longer reachable, and reclaims that memory automatically.
 
 What is event Delegation?
+attach one listener on a parent and handle its child event via bubbling in one pass.
 Event Delegation is a JavaScript technique where a single event listener is attached to a common parent element instead of multiple child elements. It works because of event bubbling. When a child element is clicked, the event bubbles up to the parent, and event.target identifies which child triggered the event. This reduces the number of event listeners, improves performance, and automatically supports dynamically added elements.
 
 <div id="container">
