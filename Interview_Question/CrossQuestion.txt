@@ -75,6 +75,52 @@ Part 2 → Explain retries (RabbitMQ feature)
 Part 3 → Explain why this is better
 "Earlier I had implemented scheduling, retries, and worker assignment myself using an in-memory queue, scheduler, and event bus. After learning RabbitMQ, I replaced much of that infrastructure with RabbitMQ because it already provides durable queues, acknowledgements, retries, dead-lettering, and better scalability."
 
+-------------------------------------OAuth (Google)--------------------------
+1.When the user clicks 'Continue with Google', the frontend redirects them to Google's OAuth server.
+2.After the user logs in and grants permission, Google redirects back to our backend with an authorization code. 
+3.The backend exchanges this authorization code for an access token, 
+then uses the access token to fetch the user's profile information like name and email from Google's UserInfo API (Google validates the token and returns the user's profile information).
+
+4.If the user doesn't exist, we create a new account. 
+5.Finally, our backend generates its own JWT and sends it to the frontend. From that point onward, the frontend authenticates with our backend using the JWT rather than Google's access token
+
+Google redirects to your callback route: GET /auth/google/callback?code=abc123  --auth code
+
+app.get("/auth/google/callback", async (req, res) => {
+    const code = req.query.code;
+
+    // Exchange the code for an access token
+});
+
+3rd point how it works behind the schenes
+
+API Call 1: Get Access Token with help of authorization code
+
+Your backend sends:
+POST https://oauth2.googleapis.com/token
+
+Google returns:
+{
+  "access_token": "ya29.a0Af...",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+
+API Call 2: Get User Profile
+
+Now your backend uses that access token.
+GET https://www.googleapis.com/oauth2/v2/userinfo
+Authorization: Bearer ya29.a0Af...
+
+Now Google returns:
+{
+  "id": "123456789",
+  "email": "vikas@gmail.com",
+  "verified_email": true,
+  "name": "Vikas Verma",
+  "picture": "https://...."
+}
+
 --------------------Docker--------------------
 1. What is Docker?
 

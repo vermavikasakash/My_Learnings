@@ -429,3 +429,34 @@ WHERE product_id = 1;
 
 DELETE FROM product
 WHERE product_id = 1;
+
+---BASIC SQL QUERY---
+// groupby and orderby
+
+SELECT COUNT(*) AS total_record, deptNo
+FROM Products
+GROUP BY dept HAVING COUNT(*) >= 4
+ORDER BY dept DESC;
+
+// joins
+// self join (emp-man relation), joining table by itself
+
+select *
+from emp e1 join emp e2
+on e1.mgr = e2.empno;
+
+// inner join (2 diff table), to obtain only matching record which has a pair
+
+select *
+from emp e inner join dept d
+on e.deptno = d.deptno;
+
+// outer join (2 diff table), to obtain only un-matching record
+
+// 1-left join (unmatched record of left and match of right) 
+
+select *
+from emp e left join dept d
+on e.deptno = d.deptno; 
+
+// same for 2- right and 3-full
