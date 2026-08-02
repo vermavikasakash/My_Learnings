@@ -11,6 +11,7 @@ status code :
 401 → Login required / Invalid token
 403 → Permission denied
 404 → Resource not found
+429 → to many request
 409 → Conflict (Already exists)
 
 500 → Internal server error (5xx → Server mistake)

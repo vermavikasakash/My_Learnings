@@ -60,6 +60,8 @@ Fanout broadcasts the event to all bound queues.
 Q9. Tell me in one sentence why RabbitMQ exists in your project.?
 "RabbitMQ is used only for asynchronous event notifications. After a business operation successfully completes, the service publishes an event so interested consumers, such as the Gateway for real-time Socket.IO updates or future analytics and notification services, can react without tightly coupling the services."
 
+---------------------ansrsource--------------
+ingestion and retrieval phase
 --------------------------------------------------------------------Task schedular ------------------------------------------:
 
 "Initially, I built the scheduler from scratch to understand the fundamentals—implementing an in-memory queue, a scheduler, round-robin worker assignment, and an event bus. Once I understood those concepts, I migrated to RabbitMQ to replace the custom infrastructure with a production-grade message broker."
@@ -177,7 +179,7 @@ Creating a CICD flow using GitHub actions :
 - On project, on root dir create 
   - .GitHub (folder)
        workflows (folder)
-        -deploy.yml (this will we treated as action, we can give any name to this)
+        -deploy.yaml (this will we treated as action, we can give any name to this)
 
 
 Developer

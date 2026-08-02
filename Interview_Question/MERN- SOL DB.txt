@@ -386,12 +386,13 @@ app.get('/orders', async (req, res) => {
     .skip(skip)
     .limit(limit);
 
-  res.json({
+return res.status(200).json({
     data,
     currentPage: page,
     totalPages: Math.ceil(total / limit),
     totalItems: total
   });
+
 });
 
 ..................Mongodb------
