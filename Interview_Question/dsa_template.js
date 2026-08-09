@@ -111,7 +111,7 @@ let stack=[];
 
 for(let i=0;i<n;i++){
 
-    while( stack.length && nums[stack[stack.length-1]]<nums[i] ){
+    while( stack.length && nums[stack[stack.length-1]] < nums[i] ){
         stack.pop();
     }
 
@@ -131,7 +131,9 @@ for(const interval of intervals){
         ans[ans.length-1][1] = Math.max( ans[ans.length-1][1], interval[1] );
     }
 }
-// 8. Backtracking
+
+// 8. Backtracking ⭐⭐⭐⭐⭐
+
  let ans = [], n = nums.length
 
     function bt(path, start) {
@@ -154,7 +156,53 @@ Premutation - Visited array concept : i=0,  solve([]);
 Are duplicates present?
                       YES → sort + skip        */
 
-// 9. BFS Template ⭐⭐⭐⭐⭐
+// 9. DP on subsequence / choice⭐⭐⭐⭐⭐
+
+function solve(i) {
+    if (i >= n) return 0;
+
+    if (memo[i] !== undefined) return memo[i];
+
+    let take = nums[i] + solve(i + 2);
+    let skip = solve(i + 1);
+
+    return memo[i] = Math.max(take, skip);
+}
+
+// -- TREE BFS / DFS ---
+
+// 1.Tree DFS ⭐⭐⭐⭐⭐
+function dfs(root){
+
+    if(root==null) return;
+
+    dfs(root.left);
+
+    dfs(root.right);
+
+}
+
+// Tree BFS ⭐⭐⭐⭐⭐
+
+var bfs = function(root) {
+    if (!root) return [];
+
+    let queue = [root];
+    let result = [];
+
+    while (queue.length) {
+        let node = queue.shift();
+        result.push(node.val);
+
+        if (node.left) queue.push(node.left);
+        if (node.right) queue.push(node.right);
+    }
+
+    return result;
+};
+
+// -- GRAPHS ---
+// 1. BFS Template ⭐⭐⭐⭐⭐
 // Used in Number of Islands, Rotten Oranges, Word Search (modified)
 
 const dir = [[1,0],[-1,0],[0,1],[0,-1]];
@@ -178,7 +226,8 @@ while(front < queue.length){
         }
     }
 }
-// 10. DFS Template ⭐⭐⭐⭐⭐
+
+// 2. DFS Template ⭐⭐⭐⭐⭐
 function dfs(i,j){
 
     if( i<0 || i>=m || j<0 || j>=n ) return;
@@ -193,17 +242,8 @@ function dfs(i,j){
 
     }
 }
-// 11.Tree DFS ⭐⭐⭐⭐⭐
-function dfs(root){
 
-    if(root==null) return;
-
-    dfs(root.left);
-
-    dfs(root.right);
-
-}
-// 12. Topological Sort ⭐⭐⭐⭐
+// 3. Topological Sort ⭐⭐⭐⭐
 let indegree = new Array(n).fill(0);
 
 let graph = Array.from({length:n},()=>[]);
@@ -230,7 +270,9 @@ while(front<queue.length){
 
     }
 }
-// 13. Union find ⭐⭐⭐⭐
+
+// 4. Dijakstra (4), mst(prim,krushal) ⭐⭐⭐⭐
+// Union find ⭐⭐⭐⭐
 class Union {
     constructor(n) {
         this.rank = new Array(n).fill(0);
@@ -263,4 +305,22 @@ class Union {
             this.rank[px]++;
         }
     }
+}
+
+// TRIE 
+class TrieNode {
+    constructor() {
+        this.children = {};
+        this.isEnd = false;
+    }
+}
+
+// BIT MANIPULATION
+
+// check power of 2
+n & (n - 1)
+
+// count set bits
+while(n){
+    n &= (n-1);
 }

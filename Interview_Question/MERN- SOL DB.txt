@@ -395,6 +395,37 @@ return res.status(200).json({
 
 });
 
+// Monogo cursor
+app.get("/products", async (req, res) => {
+  const { cursor, limit = 10 } = req.query;
+
+  let query = {};
+
+  if (cursor) {
+    query._id = { $gt: cursor };
+  }
+
+  const products = await Product.find(query)
+    .sort({ _id: 1 })
+    .limit(parseInt(limit));
+
+  const nextCursor =
+    products.length > 0 ? products[products.length - 1]._id : null;
+
+  res.json({
+    data: products,
+    nextCursor,
+  });
+});
+
+// MySQL cursor pagination
+
+SELECT * 
+FROM products
+WHERE id > last_id
+ORDER BY id ASC
+LIMIT 10;
+
 ..................Mongodb------
  db.createCollection("logs")
  show collections // List all collections

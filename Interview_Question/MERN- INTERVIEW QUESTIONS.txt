@@ -4,6 +4,21 @@ CSS-
 3.How does flex box helps us in responsiveness in css
 4.What is aria attribute in context of aria-label in html
 
+// js, mern, mysql implementation questions
+
+js : debounce, throttle, curry, Flatten nested array, Deep clone object, Promise.all, Event delegation example, custom map or reduce or filter
+react : Build search with debounce, Build pagination component, 
+
+node/express : Create paginated API , Create search API, JWT Authentication (Generate token, Middleware to verify), 
+              Write middleware (Extract token → verify → attach user), Rate limiter
+              GET /users?page=1&limit=10,  GET /products?q=phone
+
+mongo : Query with pagination (Model.find().skip().limit()), Aggregation (Group orders by user and count total)
+sql :        Get top 3 highest salary employees SELECT * FROM employees ORDER BY salary DESC LIMIT 3; or use nested query
+
+            Group By + Having, JOIN query, Find duplicates (--SELECT name, COUNT(*) FROM table GROUP BY name HAVING COUNT(*) > 1;
+            Pagination in SQL (LIMIT 10 OFFSET 20)
+
 JS/TS-
 1.What is v8, What is hoisting?, What is a closures ?, What is a Lexical Scope?, 
   What is Garbage collector ?, What is event Delegation?
@@ -44,6 +59,7 @@ REACT-
 19.Difference between server and serverless
 20.React query (TanStack Query)
 21.What is Microfrontend Architecture & the advantages of Microfrontends?
+22. Implement search api (react), implement default color green, onclick change color green-yellow-red
 
 NODE JS-
  What is a Proxy?
@@ -65,6 +81,7 @@ NODE JS-
 16.What are headers ?
 17.what is Same-Origin Policy (SOP) & CORS ?
 18. what is Express & middleware
+19. Implement get api using node. send object from server to client
 
 
 MONGO DB / SQL -
