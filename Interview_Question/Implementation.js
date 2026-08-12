@@ -149,3 +149,89 @@ let result = Promise.allSettled([p1, p2, p3])
   .catch(err => console.log(err)); // won't run
 
 console.log(result); // Promise
+
+//? ------------------ NODE /EXPRESS ------------------------
+// Q1 Write an Express middleware that logs:
+const express = require("express");
+
+let app = new express();
+function qs(req,res,next){
+    let date  = new Date();
+    console.log(new Date().toLocaleString());
+    next();
+}
+app.use(qs);
+app.get("/users");
+
+// Q2 Create an Express middleware that allows access only if header exists.:
+let app = new express();
+function auth(req,res,next){
+
+    const authHeader = req.headers.authorization;
+
+    let token = authHeader.split(" ")[1];
+    let decode = jwt.verify(token,JWT_secret);
+    let id = decode._id;
+    if(!id) return res.status(401).json({message:"Unauthorized"});
+    next();
+}
+
+app.use(auth);
+app.get("/users");
+
+
+// Q3 Read a file using streams.
+const fs = require("fs");
+const stream = fs.createReadStream("./file.txt");
+stream.on("data",(chunk)=>{
+    console.log(chunk.toString());
+});
+
+// Q4 Find users whose age is between:25 and 30
+db.user.find({age:{
+    $gte:25,
+    $lte:30
+}})
+
+// Q5 Update:city to Delhi for every user older than 30.
+db.user.updateMany(
+    {age:{$gt:30}},
+    {$set:{city:"Delhi"}}
+)
+
+// Q6 Find the oldest user.
+db.user.find({}).sort({age:-1}).limit(1);
+
+// Q7 Count how many users belong to each city.
+db.user.aggregate([
+    {
+        $group:{
+            _id:"$city",
+            count:{$sum:1 }
+        }
+    }
+])
+// ASSUME Employee
+// | id | name | salary | dept |
+// | -- | ---- | ------ | ---- |
+
+// Q8 Find employees whose salary is greater than the department average.
+SELECT *
+FROM Employee e1
+WHERE salary >
+(
+    SELECT AVG(salary)
+    FROM Employee e2
+    WHERE e1.dept = e2.dept
+);
+// Q15 Find duplicate emails.
+SELECT email
+FROM Employee
+GROUP BY email
+HAVING COUNT(*) > 1;
+
+// Q16 Delete duplicate EMAIL rows but keep one.
+DELETE e1
+FROM Employee e1
+JOIN Employee e2
+ON e1.email = e2.email AND e1.id > e2.id;

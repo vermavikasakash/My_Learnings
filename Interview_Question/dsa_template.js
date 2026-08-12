@@ -20,16 +20,12 @@ while(left<right){
 // Examples : Longest Substring ,Minimum Windo ,Fruit Into Basket
 let left = 0;
 
-for(let right=0; right<n; right++){
+for (let r = 0; r < n; r++) {
+    // add nums[r]
 
-    // include nums[right]
-
-    while(invalidWindow){
-
-        // remove nums[left]
-
-        left++;
-
+    while (window is invalid) {
+        // remove nums[l]
+        l++;
     }
 
     // update answer

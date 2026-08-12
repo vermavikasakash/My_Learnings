@@ -25,6 +25,49 @@ FROM Customers
 ORDER BY age DESC
 LIMIT 1 OFFSET 1 ;
 
+Ques : What is Idempotency & transaction?
+Ans ✅: An operation is idempotent if doing it multiple times gives the same result as doing it once
+idempotency Prevent duplicate effects.
+
+usecases - If payment API fails and retries → you don’t want double payment
+
+Call once → name = Vikas, Call 10 times → still name = Vikas 👉 Result doesn’t change → idempotent.
+
+eg : PUT /user/1
+     body: { name: "Vikas" }
+
+Transaction -Ensure consistency
+
+Idempotency → avoid duplicate request  
+Transaction → ensure correct DB update
+
+They are mostly used together in real systems
+
+🧠 3. What is ACID Transaction
+“ACID ensures reliable transactions — Atomicity, Consistency, Isolation, and Durability.”
+
+ACID = properties of a database transaction 
+A- Atomicity, C - consistency, I-Isolation, D-Durability
+
+🔥 A → Atomicity : All or nothing
+
+Money deducted + order created (If one fails → everything rollback)
+
+🔥 C → Consistency : DB always stays valid
+
+No invalid state allowed - Example: balance cannot be negative (if rule exists)
+
+🔥 I → Isolation : Transactions don’t interfere with each other, they will be isolated
+
+Example:
+
+2 users booking same seat
+→ only one should succeed
+
+🔥 D → Durability : Once committed → data is permanent
+
+Even if: server crashes or system restarts
+
 Ques : Use Embedding when relationship is One to One or one to few (like user address in user table).
 Since Data is small. it will Always fetched together.
 
@@ -369,30 +412,54 @@ db.orders.aggregate([
 "When do you use aggregate instead of find?"
 Whenever we need: grouping, calculations, joins, pipelines
 
-QUES : 10 Paginated api in MongoDb
+QUES : 10 Paginated + search api in MongoDb
 ✅ ANS: Pagination using skip and limit
 🧠 Concept:
 skip: how many documents to skip (based on page)
 limit: how many documents to return (page size)
 
-app.get('/orders', async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+// basic API
+app.get("/", (req, res) => {})
+
+// query params
+const { page, limit } = req.query;
+
+// Mongo find
+Model.find({})
+
+// pagination
+.skip().limit()
+
+//------------------
+
+app.get('/products', async (req, res) => {
+  let { page = 1, limit = 10, search = "" } = req.query;
+
+  // convert to number
+  page = Number(page);
+  limit = Number(limit);
+
   const skip = (page - 1) * limit;
 
-  const total = await db.orders.countDocuments();
-  const data = await db.orders.find({})
+  // search filter
+  const filter = {
+    title: { $regex: search, $options: "i" }
+  };
+
+  // total based on filter
+  const total = await db.products.countDocuments(filter);
+
+  const data = await db.products.find(filter)
     .sort({ date: -1 })
     .skip(skip)
     .limit(limit);
 
-return res.status(200).json({
+  return res.status(200).json({
     data,
     currentPage: page,
     totalPages: Math.ceil(total / limit),
     totalItems: total
   });
-
 });
 
 // Monogo cursor

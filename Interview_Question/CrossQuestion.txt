@@ -1,3 +1,8 @@
+Monolithic architecture: The application is built as a single deployable unit, where different functionalities such as authentication, orders, payments, etc. are part of the same application/service.
+
+Microservices architecture: The application is divided into multiple independently deployable services, where each service owns a specific business capability, such as auth service, order service, payment service, etc.
+
+// --------Project Ecommerce --------
 •  HTTP → Business operations (Product, Auth, Payment, Checkout) 
 •  RabbitMQ → Asynchronous notifications (cart.updated, order.created, payment.completed) 
 •  Socket.IO → Real-time UI updates 
@@ -9,8 +14,6 @@ Q1. Why doesn't Cart Service directly use Socket.IO?
 
 Cart Service -> RabbitMQ -> Gateway -> Socket.IO -> Frontend
       
-
-
 Q2. RabbitMQ is down. User clicks Add to Cart.
 
 The event is not published.
@@ -60,22 +63,21 @@ Fanout broadcasts the event to all bound queues.
 Q9. Tell me in one sentence why RabbitMQ exists in your project.?
 "RabbitMQ is used only for asynchronous event notifications. After a business operation successfully completes, the service publishes an event so interested consumers, such as the Gateway for real-time Socket.IO updates or future analytics and notification services, can react without tightly coupling the services."
 
----------------------ansrsource--------------
-ingestion and retrieval phase
---------------------------------------------------------------------Task schedular ------------------------------------------:
+Q.10 How did you integrate Razorpay/payment service?
 
-"Initially, I built the scheduler from scratch to understand the fundamentals—implementing an in-memory queue, a scheduler, round-robin worker assignment, and an event bus. Once I understood those concepts, I migrated to RabbitMQ to replace the custom infrastructure with a production-grade message broker."
+"The Payment Service creates a Razorpay order, the frontend opens Razorpay Checkout, and after payment Razorpay returns the payment ID, order ID, and signature. The frontend sends those values to my backend, where the Payment Service independently generates the expected HMAC-SHA256 signature using the Razorpay secret and compares it with the received signature. Only after successful verification do I create the final ecommerce order."
 
-Part 1 → Explain your scheduler (your original work)
+Verification :
+"I generate the expected signature according to Razorpay's documented HMAC-SHA256 verification algorithm, using the Razorpay secret_key and the order ID and payment ID. I then compare that generated signature with the signature returned by Razorpay through the frontend. If they match, the payment response has been authenticated; if they don't, I reject it."
 
-"This project is an asynchronous task scheduling backend. The admin creates tasks through an API. Instead of processing them synchronously, tasks are persisted in MongoDB and published to RabbitMQ. Multiple worker consumers subscribe to the queue and process tasks asynchronously. This decouples API requests from task execution and allows workers to scale independently."
+How do you know your generated signature is correct?
+"I follow Razorpay's defined HMAC-SHA256 algorithm using the order ID, payment ID, and server-side secret. Razorpay generated the original signature using the same verification scheme, so matching signatures authenticate the response."
 
-Part 2 → Explain retries (RabbitMQ feature)
+For a production system, I would add Razorpay webhooks as an additional server-to-server mechanism so that payment state can still be reconciled if the browser disconnects."
 
-"If task processing fails, the worker negatively acknowledges (NACKs) the message. RabbitMQ routes it to a Dead Letter Exchange, which forwards it to a retry queue configured with a TTL. After the TTL expires, RabbitMQ automatically routes the message back to the main processing queue for another processing attempt."
+-------------------------------------------------------------------- DocMind AI ------------------------------------------:
 
-Part 3 → Explain why this is better
-"Earlier I had implemented scheduling, retries, and worker assignment myself using an in-memory queue, scheduler, and event bus. After learning RabbitMQ, I replaced much of that infrastructure with RabbitMQ because it already provides durable queues, acknowledgements, retries, dead-lettering, and better scalability."
+See the flow diagram
 
 -------------------------------------OAuth (Google)--------------------------
 1.When the user clicks 'Continue with Google', the frontend redirects them to Google's OAuth server.
@@ -260,3 +262,80 @@ jobs:
 
 Can we use CI/CD with serverless applications?
 "Yes. CI/CD works with both traditional and serverless applications. The CI part—building and testing the code—is similar. The CD part differs. For a traditional application, the pipeline might SSH into an EC2 instance to deploy. For a serverless application, the pipeline deploys directly to services like AWS Lambda using AWS APIs or deployment tools, so SSH isn't needed."
+
+--------------------AWS---------------------
+EC2
+
+Q1. What is EC2? How would you deploy a Node.js application on EC2?
+
+Answer:
+EC2 is a virtual server provided by AWS. I can launch an EC2 instance, connect to it using SSH, install Node.js and required dependencies, clone my application, configure environment variables, and run the application using something like PM2. I would also configure the required security-group ports.
+
+Q2. What is a Security Group in EC2?
+
+Answer:
+A Security Group acts like a firewall for an EC2 instance. It controls which inbound and outbound traffic is allowed. For example, I can allow SSH on port 22 and HTTP/HTTPS traffic on ports 80/443.
+
+S3
+
+Q3. Why would you use S3 in a MERN application?
+
+Answer:
+I would use S3 to store files such as images, videos, PDFs, and user uploads instead of storing them on the EC2 server. S3 is designed for object storage and is more suitable for storing large files.
+
+Q4. What is a pre-signed URL in S3?
+
+Answer:
+A pre-signed URL is a temporary URL generated by the backend that gives permission to access or upload a specific S3 object for a limited time. It allows the frontend to interact with S3 without exposing AWS credentials.
+
+IAM
+
+Q5. What is IAM and why is it important?
+
+Answer:
+IAM stands for Identity and Access Management. It controls who or what can access AWS resources and what actions they can perform. For example, I can give an EC2 application permission to upload files to a particular S3 bucket.
+
+Q6. Why shouldn't you put AWS access keys directly in your Node.js code?
+
+Answer:
+Because anyone who gets access to the code could potentially use those credentials. I would use environment variables for local development and preferably an IAM role attached to EC2 for applications running on AWS.
+
+Elastic Beanstalk
+
+Q7. What is AWS Elastic Beanstalk?
+
+Answer:
+Elastic Beanstalk is a managed service that makes deploying applications easier. Instead of manually configuring EC2, I provide my application and Beanstalk manages things like the underlying EC2 instances, deployment, scaling, and health monitoring.
+
+Q8. If Beanstalk uses EC2 underneath, why not just use EC2?
+
+Answer:
+With EC2, I have to manage the server and deployment configuration myself. Beanstalk handles much of that infrastructure management for me, so it's simpler when I want to deploy an application without managing everything manually.
+
+CloudWatch
+
+Q9. What is CloudWatch used for?
+
+Answer:
+CloudWatch is used for monitoring AWS resources and applications. For example, I can monitor EC2 CPU utilization, application logs, errors, and set alarms when certain metrics cross a threshold.
+
+Q10. Your Node.js application is returning 500 errors in production. How can CloudWatch help?
+
+Answer:
+I can check the application logs in CloudWatch to find the error and stack trace. I can also check EC2 metrics such as CPU and memory-related monitoring to see whether there is a resource problem.
+
+// weakness
+Sometimes I lose track of time when I'm deeply focused on solving a technical problem. I'm working on this by setting time limits and regularly checking my progress so I can balance focus with deadlines.
+
+// why to hire you (exp, skills, backend strength, problem solving, Attitude)
+
+I believe you should hire me because I have hands-on experience building full-stack applications using React, Node.js, Express, and databases like MongoDB and MySQL. I’m comfortable working on both frontend and backend, but I’m particularly interested in backend development and building APIs and scalable features.
+
+I also have experience working with real-world concepts like authentication, payment integration, real-time communication, pagination, and microservices. Along with that, I regularly practice DSA and system design, so I can approach problems logically rather than just focusing on writing code.
+
+Most importantly, I’m someone who learns quickly and takes ownership of the work. I believe I can contribute to the team while continuing to grow with the role.
+
+// salary expectation
+Based on my experience and the responsibilities of this role, I'm expecting around 9 to 11 LPA. However, I'm open to discussing it based on the overall opportunity and role.
+
+

@@ -94,19 +94,22 @@ Node.js uses V8 to execute JavaScript outside the browser.
 
 Ques : 
 What is hoisting?
-js hoist declarations to the top of their scope.
+During the creation phase, JavaScript processes declarations in their respective scope before executing the code.
+
 Hoisting is JavaScript's behavior of moving declarations to the top of their scope during the creation phase. Variable declarations (var) are hoisted and initialized with undefined, while let and const are hoisted but remain in the Temporal Dead Zone until their declaration is executed. Function declarations are hoisted with their full implementation.
 
 var → Hoisted, initialized as undefined.
 let / const → Hoisted, but cannot be accessed before declaration (TDZ).
 Function declarations → Fully hoisted.
+Arrow functions → are not hoisted like function declarations.
 Function expressions → Variable is hoisted, function assignment is not.
 
 What is a closures ?
-A closure is a function that remembers and can access variables from its lexical (outer) scope even after the outer function has finished executing. JavaScript achieves this by preserving the function's lexical environment as long as the inner function still references it.
+A closure is a function that remembers its variables and can access it from lexical (or outer) scope even tough the outer function has finished its execution.
+JavaScript achieves this by preserving the function's lexical environment as long as the inner function still references it.
 
 What is a Lexical Scope?
-Lexical scope means a function determines which variables it can access based on where fn is defined in the source code, not where it is called. 
+Lexical scope means a function can access variables based on where the function is written in the code, not where it is called. 
 This is why inner functions can access variables from their outer functions, and it forms the foundation of closures.
 
 What is Garbage collector ?
