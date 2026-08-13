@@ -4,31 +4,13 @@ QUE 1 : Difference between rem,em,px
 
 Ans :In CSS, `rem`, `em`, and `px` are units of measurement used to define the size of elements, such as text, margins, and padding.
 
-PX (Pixels):
-1. *Absolute unit*: `px` is an absolute unit, meaning it's fixed and doesn't change based on other factors.
-2. *Screen-based*: `px` is based on the screen's resolution, making it suitable for digital displays.
-3. *Not scalable*: `px` values don't scale when the user zooms in or out of the page.
-
-EM:
-1. *Relative unit*: `em` is a relative unit, meaning it's based on the font size of the parent element.
-2. *Scalable*: `em` values scale when the user zooms in or out of the page.
-3. *Cascading*: `em` values can be affected by the font size of parent elements, making it useful for creating scalable typography.
-
-REM (Root EM):
-1. *Relative unit*: `rem` is a relative unit, meaning it's based on the root element's font size (usually the `html` element).
-2. *Scalable*: `rem` values scale when the user zooms in or out of the page.
-3. *Not cascading*: `rem` values are not affected by the font size of parent elements, making it useful for creating consistent typography.
-
-Key differences:
-1. *Scalability*: `em` and `rem` are scalable, while `px` is not.
-2. *Relative vs. absolute*: `em` and `rem` are relative units, while `px` is an absolute unit.
-3. *Cascading behavior*: `em` values can be affected by parent elements, while `rem` values are not.
+PX (Pixels): Absolute unit meaning it's fixed and doesn't change based on other factors.
+EM & REM (Root EM): Relative unit: em size will based on the font size of the parent element whereas for rem it is based on root elements.
 
 When to use each:
 1. *Use `px` for*: Fixed-size elements, such as borders, margins, or padding.
 2. *Use `em` for*: Scalable typography, especially when you want the font size to be relative to the parent element.
 3. *Use `rem` for*: Consistent typography, especially when you want the font size to be relative to the root element.
-
 
 QUE 2.Semantic elements or tag
 
@@ -109,8 +91,7 @@ A closure is a function that remembers its variables and can access it from lexi
 JavaScript achieves this by preserving the function's lexical environment as long as the inner function still references it.
 
 What is a Lexical Scope?
-Lexical scope means a function can access variables based on where the function is written in the code, not where it is called. 
-This is why inner functions can access variables from their outer functions, and it forms the foundation of closures.
+Lexical scope determines the scope of a variable is by where it is declared in the source code not when or where it is called
 
 What is Garbage collector ?
 A garbage collector is a built-in memory management component of the JavaScript engine that tracks allocated memory, determines which objects are no longer reachable, and reclaims that memory automatically.
@@ -466,9 +447,12 @@ user.greet(); // Hello
 
 
 Ques 14 : Memory leak in js 
-✅ ANS : "Garbage collector only removes unreachable objects. Memory leaks happen when unnecessary references are still retained through closures, event listeners, timers, globals, or detached DOM nodes."
+✅ ANS : A memory leak happens when your application keeps references to objects which no longer needs, so the garbage collector cannot free that memory.
 
-eg. Timer function never stopped, references not get removed by execultion
+ Memory leaks happen when unnecessary references are still retained through cache, closures, event listeners, timers, globals, or detached DOM nodes.
+
+eg. Timers that continue running, Cache without expiration/size limits, Global arrays/objects that continuously grow, 
+    references not get removed by execultion, Event listeners that aren't removed, Keeping unnecessary references to large objects
 
 solution : "Remove unnecessary references"
 

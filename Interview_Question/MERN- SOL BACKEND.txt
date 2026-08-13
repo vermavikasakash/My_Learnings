@@ -247,7 +247,22 @@ QUES 7.Difference between running js on browser and on node js
 | Security           | Highly sandboxed          | Less sandboxed                 |
 
 
-8.Call back hell in node js
+QUES 8.what is a callback and callback hell in node js. what are the alternatives of that
+✅ ANS: A callback is a function passed to another function, which is called later when an asynchronous operation is completed.
+Characteristics of callbacks
+
+const fs = require("fs");
+
+fs.readFile("test.txt", "utf8", (err, data) => {
+  console.log(data);
+});
+
+Callback hell happens when you have multiple asynchronous operations dependent on each other, causing callbacks to be nested inside callbacks.
+It starts becoming difficult to:read, maintain, debug, handle errors
+
+That's why it is often called the “pyramid of doom.”
+
+Alternatives to callback hell: Promises and async/await with try-catch
 
 QUES 9 : json web token, access token vs refresh token?
 ✅ ANS: "JWT is a stateless authentication mechanism.
@@ -359,98 +374,7 @@ CORS is permission,CORS says:"I trust this specific origin."
 
 SERVER RESPONSE : Access-Control-Allow-Origin: https://myapp.com
 
-QUES 12 :What is callback in node
-✅ ANS: a callback is a function that is passed as an argument to another function, which is then executed by that function when a specific operation is complete.
-
-Characteristics of callbacks
-Here are some key characteristics of callbacks in Node.js:
-
-1. *Asynchronous*: Callbacks are used to handle asynchronous operations, such as I/O operations, network requests, or database queries.
-2. *Function as an argument*: A callback is a function that is passed as an argument to another function.
-3. *Executed by the caller*: The callback function is executed by the function that received it as an argument, typically when a specific operation is complete.
-
-
-
-Types of callbacks
-There are two types of callbacks in Node.js:
-
-1. *Error-first callbacks*: These callbacks take an error as their first argument, followed by the result of the operation. This pattern is commonly used in Node.js APIs.
-2. *Regular callbacks*: These callbacks do not take an error as their first argument. Instead, they may take a result or other arguments.
-
-Advantages:
-
-- *Asynchronous*: Callbacks enable asynchronous programming, which is essential for I/O-bound operations.
-- *Non-blocking*: Callbacks allow Node.js to continue executing other tasks while waiting for an operation to complete.
-
-Disadvantages:
-
-- *Callback hell*: Deeply nested callbacks can lead to code that is difficult to read and maintain.
-- *Error handling*: Callbacks require manual error handling, which can be cumbersome.
-
-In Node.js, error handling evolved in stages:
-
-1.Error-first callbacks
-2.Promises (.then/.catch)
-3.try-catch
-4.async-await
-
-1.Error-first callbacks
-
-const fs = require("fs");
-
-fs.readFile("test.txt", "utf-8", (error, data) => {
-
-    if (error) {
-        console.log("Error:", error.message);
-        return;
-    }
-
-    console.log(data);
-});
-
-2.Promises (.then/.catch)
-
-const fs = require("fs/promises");
-
-fs.readFile("test.txt", "utf-8")
-   .then((data) => {
-       console.log(data);
-   })
-   .catch((error) => {
-       console.log("Error:", error.message);
-   });
-
-3. or 4. Async-Await + try-catch (Modern Approach)
-
-const fs = require("fs/promises");
-
-async function readData() {
-
-    try {
-
-        const data = await fs.readFile(
-            "test.txt",
-            "utf-8"
-        );
-
-        console.log(data);
-
-    } catch (error) {
-
-        console.log("Error:", error.message);
-    }
-}
-
-readData();
-
-
-Alternatives to callbacks
-Node.js provides several alternatives to callbacks, including:
-
-- *Promises*: A promise represents a value that may not be available yet. Promises provide a more structured approach to asynchronous programming.
-- *Async/await*: Async/await is a syntax sugar on top of promises that makes asynchronous code look and feel synchronous.
-
-Ques 18 : 
+Ques 12 : 
 Express is a minimal Node web framework for routing and middleware that keeps servers simple. Why? Less boilerplate, faster APIs.
  Ques : Middleware in express :
 "Middleware in Express is a function that executes between receiving an HTTP request and sending the HTTP response. It has access to the request, response, and the next() function.

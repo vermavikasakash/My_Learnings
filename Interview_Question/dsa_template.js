@@ -303,14 +303,6 @@ class Union {
     }
 }
 
-// TRIE 
-class TrieNode {
-    constructor() {
-        this.children = {};
-        this.isEnd = false;
-    }
-}
-
 // BIT MANIPULATION
 
 // check power of 2
@@ -319,4 +311,38 @@ n & (n - 1)
 // count set bits
 while(n){
     n &= (n-1);
+}
+
+// TRIE 
+class TrieNode {
+    constructor() {
+        this.children = {};
+        this.isEnd = false;
+    }
+}
+class Trie {
+    constructor() {
+        this.root = new TrieNode();
+    }
+
+    insert(word) {}
+
+    search(word) {}
+
+    startsWith(prefix) {}
+}
+
+
+// segment tree LC 3161 (for reference)
+class SegmentTree {
+    constructor(nums) {
+        this.tree = new Array(4 * nums.length);
+        this.build(nums, 0, 0, nums.length - 1);
+    }
+
+    build(nums, node, left, right) {}
+
+    query(node, left, right, ql, qr) {}
+
+    update(node, left, right, index, value) {}
 }

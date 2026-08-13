@@ -1,8 +1,3 @@
-CSS-
-1.Difference between rem,em,px
-2.Semantic elements or tag
-3.How does flex box helps us in responsiveness in css
-4.What is aria attribute in context of aria-label in html
 
 // js, mern, mysql implementation questions
 
@@ -11,7 +6,7 @@ react : Build search with debounce, Build pagination component,
 
 node/express : Create paginated API , Create search API, JWT Authentication (Generate token, Middleware to verify), 
               Write middleware (Extract token → verify → attach user), Rate limiter
-              GET /users?page=1&limit=10,  GET /products?q=phone
+               GET /products?q=phonepage=1&limit=10
 
 mongo : Query with pagination (Model.find().skip().limit()), Aggregation (Group orders by user and count total)
 sql :        Get top 3 highest salary employees SELECT * FROM employees ORDER BY salary DESC LIMIT 3; or use nested query
@@ -19,9 +14,15 @@ sql :        Get top 3 highest salary employees SELECT * FROM employees ORDER BY
             Group By + Having, JOIN query, Find duplicates (--SELECT name, COUNT(*) FROM table GROUP BY name HAVING COUNT(*) > 1;
             Pagination in SQL (LIMIT 10 OFFSET 20)
 
+CSS-
+1.Difference between rem,em,px
+2.Semantic elements or tag
+3.How does flex box helps us in responsiveness in css
+4.What is aria attribute in context of aria-label in html
+
 JS/TS-
 1.What is v8, What is hoisting?, What is a closures ?, What is a Lexical Scope?, 
-  What is Garbage collector ?, What is event Delegation?
+  What is Garbage collector?, What is event Delegation?
 1.Shallow and deep copy ( structuredClone(), JSON.parse(JSON.stringify()) , _.cloneDeep() Lodash) in js
 2.Difference between type and interface in Typescript. When would you choose one over the other?
 3.When to use rest parameter and spread parameter, also tell the difference
@@ -63,35 +64,31 @@ REACT-
 
 NODE JS-
  What is a Proxy?
-1. What is callback & close callbacks in node
+1.Event loop in node.js 
 2.What is cluster in node js
-3.What is setImmediate in node
-4.What is piping in node js
-5.Process.next and setImmediate difference in node.js
-6.Difference between authentication and authorisation
-7.wassi, fork and spawn in node
-8.Difference between running js on browser and on node js
-9.Streams and Buffer in node js
-10.What is piping in node js
-11.Event loop in node js
-12.Call back hell in node js
-13.Micro and macro task in nodejs
-14.Event loop in node.js
-15.json web token, access token vs refresh token
-16.What are headers ?
-17.what is Same-Origin Policy (SOP) & CORS ?
-18. what is Express & middleware
-19. Implement get api using node. send object from server to client
+3.What is setImmediate & process.nextTick() in node (micro or macro tasks),
+4.What is piping, streams & buffers in node js
+5.Difference between authentication and authorization
+6.fork, wassi and spawn in node
+7.Difference between running js on browser and on node js
+8.what is a callback and callback hell in node js. what are the alternatives of that
+9.json web token, access token vs refresh token?
+10.What are headers 
+11.what is Same-Origin Policy (SOP) & CORS ?
+12. what is Express & middleware
+CRUD. Implement get api using node. send object from server to client
 
 
 MONGO DB / SQL -
-1.Difference between Sql and NoSQL
-2.Difference Primary key and foreign key
-3.Find the 2nd max age from table
-4.Joins and indexing in database
-5.How you will achieve joins in MongoDb
-6.What is aggregate in MongoDb
-7.What is sharding
+CRUD - Monogo and Mysql
+Q.Difference between Sql and NoSQL
+Q. Difference Primary key and foreign key
+Q. Find the 2nd max age from table
+
+1.What is Idempotency & transaction?
+2.Joins and indexing in database
+3.How you will achieve joins in MongoDb
+4.What is sharding
 8.When do you use transactions?
 
 // Real time questions 

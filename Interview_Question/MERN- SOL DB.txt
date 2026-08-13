@@ -153,7 +153,7 @@ async function placeOrder(productId, userId) {
     }
 }
 
-QUES 4.Indexing in database
+QUES 2.Indexing in database
 ✅ ANS :Without indexing we do Collection/db Scan which has TC O(n). with indexing search become O(lon n) as it uses hashTree.
 
 Indexing is just like creating a "search shortcut" to help speed up data retrieval. Without indexes, databases must scan every document or row — making queries slow as data grows.
@@ -231,7 +231,7 @@ Too many indexes = slower inserts/updates
 Large indexes consume more memory/disk
 
 
-QUES 5.How you will achieve joins in MongoDb
+QUES 3.How you will achieve joins in MongoDb
 ✅ ANS :Using aggregate with lookup, or we can use populate in mongoose
 
 Assume a users collection with _id matching orders.userId:
@@ -259,7 +259,7 @@ populate is Application Level (Mongoose)
 lookup is Database Level (MongoDB)
 
 
-QUES 6 :What is sharding
+QUES 4 :What is sharding
 ✅ ANS :Sharding is the process of storing data records across multiple machines to support horizontal scaling. Each machine (shard) holds a subset of the data.
 
 | Feature            | Description                                      |
