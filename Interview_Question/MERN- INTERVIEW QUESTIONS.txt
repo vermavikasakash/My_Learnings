@@ -1,7 +1,7 @@
 
 // js, mern, mysql implementation questions
 
-js : debounce, throttle, curry, Flatten nested array, Deep clone object, Promise.all, Event delegation example, custom map or reduce or filter
+js : debounce, throttle, curry, Flatten nested array, Deep clone object, group by object key, Promise.all, Event delegation example, custom filter map reduce
 react : Build search with debounce, Build pagination component, 
 
 node/express : Create paginated API , Create search API, JWT Authentication (Generate token, Middleware to verify), 
@@ -37,6 +37,7 @@ JS/TS-
 12.What is mixins in js
 13.What is object prototype.
 14.Memory leak in js 
+15.What is pure functions
 
 REACT-
 1.In react how we can call an api before rendering the ui

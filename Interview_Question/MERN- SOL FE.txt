@@ -159,17 +159,20 @@ Key differences:
 
 QUES 4.Difference between call, apply and bind method in js
 
-"this" is a keyword that refers to the object that is executing the current function. Its value is determined by how the function is called, not where it is defined. 
-this depends on the call site (how the function is invoked).
+this is a special keyword in JavaScript that refers to an object. Its value is determined by how a function is called, not where it is defined.
+
+this value depends on the call site (how the function is invoked).
+
 const person1 = {
     name: "Vikas",
     greet() {
         console.log(this.name);
     }
 };
-// person1.greet; // "vikas
+// person1.greet(); // "vikas // Here, greet() is called through person1. so this === person1
+
 let fn = person1.greet;
-fn(); // ud
+fn(); // ud // Since the caller is no longer person1, this loses its connection to person1.so this === undefined
 
 
 Arrow functions do not have their own this. They inherit it from their surrounding scope.
@@ -474,6 +477,32 @@ Nullify Large References
      hugeData = null;
 
 Ques : custom memoization (caching) DP from leetcode
+
+QUES 15:What is pure functions
+✅ ANS : A pure function is a function that always returns the same output for the same input and doesn't cause any side effects. It doesn't modify external variables, access changing global state, or interact with external systems. Redux reducers are a common example of pure functions in JavaScript.
+
+function add(a, b) {
+  return a + b;
+}
+
+console.log(add(2, 3)); // 5
+console.log(add(2, 3)); // 5
+
+// impure function
+let total = 0;
+
+function add(value) {
+  total += value;
+
+  return total;
+}
+
+// impure function
+function getTime() {
+  return new Date();
+}
+console.log(getTime());
+console.log(getTime());
 
                                                    -------------------REACT----------------------------
 

@@ -262,27 +262,8 @@ lookup is Database Level (MongoDB)
 QUES 4 :What is sharding
 ✅ ANS :Sharding is the process of storing data records across multiple machines to support horizontal scaling. Each machine (shard) holds a subset of the data.
 
-| Feature            | Description                                      |
-| ------------------ | ------------------------------------------------ |
-| What it is         | Splitting a large collection into smaller parts  |
-| Goal               | Horizontal scaling and better performance        |
-| Uses               | Big data, high traffic, distributed architecture |
-| MongoDB components | Shard, Mongos (router), Config server            |
 
-⚡ Benefits:
-Faster queries (parallel access)
-Handles big data (each shard has limited data)
-Adds scalability and fault tolerance
-
-Example : Let’s say you have users from different countries:
-A query for a US user will be routed directly to Shard 1.
-| Shard   | Data Stored            |
-| ------- | ---------------------- |
-| Shard 1 | Users from 🇺🇸 US     |
-| Shard 2 | Users from 🇮🇳 India  |
-| Shard 3 | Users from 🇫🇷 France |
-
-QUES 7.What is aggregate in MongoDb
+QUES 5.What is aggregate in MongoDb
 ✅ ANS : aggregate() method is used to process data records and return computed results — like performing SQL-like operations such as GROUP BY, JOIN, FILTER, SORT, SUM, etc. on documents.
 ⚡ Use Cases:
 Reporting and analytics
@@ -330,29 +311,16 @@ Example :  Sample Data in orders collection:
   date: ISODate("2024-05-01")
 }
 
-i) $group – Group by a field and apply aggregation
+i) $group – Group by & having
 
 db.orders.aggregate([
-  {
-    $group: {
-      _id: "$category",
-      totalSales: { $sum: "$price" },
-      itemCount: { $sum: 1 }
-    }
-  }
+  { $group: { _id: "$customer_id", cnt: { $sum: 1 } } },
+  { $match: { cnt: { $gt: 1 } } }
 ]);
 
 ✅ Groups by category and calculates total sales and item count.
 
-ii) $limit – Limit the number of reults
-
-db.orders.aggregate([
-  { $limit: 5 }
-]);
-
-✅ Returns only the first 5 documents.
-
-iii) $lookup – Join with another collection
+ii) $lookup – Join with another collection
 Assume a users collection with _id matching orders.userId:
 
 db.orders.aggregate([
@@ -360,13 +328,22 @@ db.orders.aggregate([
     $lookup: {
       from: "users",
       localField: "userId",
-      foreignField: "_id",
+      foreign Field: "_id",
       as: "userDetails"
     }
   }
 ]);
 
 ✅ Joins orders with users, adds userDetails array to each order.
+
+iii) $limit – Limit the number of reults
+
+db.orders.aggregate([
+  { $limit: 5 }
+]);
+
+✅ Returns only the first 5 documents.
+
 
 iv) $match – Filter documents (like WHERE)
 db.orders.aggregate([
