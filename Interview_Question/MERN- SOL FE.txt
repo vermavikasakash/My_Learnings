@@ -988,10 +988,11 @@ const getData = async () => {
 };
 
 QUES 17. What is currying in js or react
-✅ ANS: "Currying creates a reusable function with some arguments already fixed."
+✅ ANS: Currying is a JavaScript technique that breaks a function into multiple smaller functions so we can pass arguments one at a time and reuse the function later.
 Currying help us to create a new function by pre-filling some arguments of an existing function.
 
-curry configure common values once and reuse them
+
+It allows partial application and improves function reusability.
 
 js- example :
 

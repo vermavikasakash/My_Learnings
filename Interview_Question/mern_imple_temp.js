@@ -13,7 +13,26 @@
 | 10       | Infinite scrolling      | ⭐⭐⭐             |
  */
 
-// .Authentication , Protected routes
+// --------- rate limitter (node)
+const map = new Map();
+
+const rateLimiter = (req, res, next) => {
+    const user = req.ip;
+    const now = Date.now();
+    // 1st if not seen 
+      if (!map.has(user))  map.set(user, {count: 1,  startTime: now }); return next();
+    // Reset the window after 10 seconds 
+     const data = map.get(user);
+     if (now - data.startTime > 10000) map.set(user, {count: 1,startTime: now});return next();
+     // Block after 3 requests
+    if (data.count >= 3) return res.status(429).json({message: "Too many requests"});
+    
+    data.count++;
+    next();
+    }
+app.use(rateLimiter);
+
+// ----- Authentication , Protected routes
 const auth = (req, res, next) => {
   // verify JWT
 

@@ -157,19 +157,42 @@ List containers : docker ps
 List images : docker images
 
 7. Explain your Dockerfile
-FROM node:20  // base Image
 
-WORKDIR /app  // sets current working directory
+FROM node:20                         // base Image
 
-COPY package*.json .  // copies files
+WORKDIR /app                         // sets current working directory
 
-RUN npm install    // executes while building image i.e RUN npm install	
+COPY package*.json .                 // copies files
+
+RUN npm install                      // executes while building image i.e RUN npm install	
 
 COPY . .
 
 EXPOSE 5000
 
-CMD ["npm","start"]  // Executed when container starts.
+CMD ["npm","start"]                  // Executed when container starts.
+
+8. Dockekr-compose.yml
+
+name: e-commerce (optional)
+
+services:
+
+  service-name:
+    image: image-name
+    container_name: image-name
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/ecommerce
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
 
 //-------------- CICD Using GitHub actions ------------
 explain flow :
