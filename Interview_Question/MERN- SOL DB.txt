@@ -265,11 +265,6 @@ QUES 4 :What is sharding
 
 QUES 5.What is aggregate in MongoDb
 ✅ ANS : aggregate() method is used to process data records and return computed results — like performing SQL-like operations such as GROUP BY, JOIN, FILTER, SORT, SUM, etc. on documents.
-⚡ Use Cases:
-Reporting and analytics
-Data transformation
-Filtering, grouping, and sorting
-Joining collections (like SQL joins)
 
 | Stage      | Description                             |
 | ---------- | --------------------------------------- |
@@ -292,12 +287,7 @@ $project - SELECT columns
 $lookup - JOINs
 
 ✅ Syntax:
-db.collection.aggregate([
-  { stage1 },
-  { stage2 },
-  { stage3 },
-  ...
-]);
+db.collection.aggregate([ { stage1 },{ stage2 },...]);
 Each stage is an object that performs an operation and passes its result to the next stage — like a pipeline.
 
 Example :  Sample Data in orders collection:
@@ -311,16 +301,7 @@ Example :  Sample Data in orders collection:
   date: ISODate("2024-05-01")
 }
 
-i) $group – Group by & having
-
-db.orders.aggregate([
-  { $group: { _id: "$customer_id", cnt: { $sum: 1 } } },
-  { $match: { cnt: { $gt: 1 } } }
-]);
-
-✅ Groups by category and calculates total sales and item count.
-
-ii) $lookup – Join with another collection
+i) $lookup – Join with another collection
 Assume a users collection with _id matching orders.userId:
 
 db.orders.aggregate([
@@ -336,21 +317,22 @@ db.orders.aggregate([
 
 ✅ Joins orders with users, adds userDetails array to each order.
 
-iii) $limit – Limit the number of reults
+ii) $group – Group by & having
 
 db.orders.aggregate([
-  { $limit: 5 }
+  { $group: { _id: "$customer_id", cnt: { $sum: 1 } } },
+  { $match: { cnt: { $gt: 1 } } }
 ]);
 
-✅ Returns only the first 5 documents.
+✅ Groups by category and calculates total sales and item count.
 
+iii) $limit – db.orders.aggregate([{ $limit: 5 }]);
 
-iv) $match – Filter documents (like WHERE)
-db.orders.aggregate([
-  { $match: { category: "Electronics" } }
-]);
+iv) $skip – db.orders.aggregate([{ $skip: 5 }]);		
 
-✅ Filters only electronics orders.
+vi) $sort – db.orders.aggregate([ { $sort: { price: -1 } } ]); // Descending
+
+iv) $match – db.orders.aggregate([{ $match: { category: "Electronics" } }]); ✅ Filters only electronics orders.
 
 v) $project – Select specific fields or transform them
 
@@ -365,18 +347,6 @@ db.orders.aggregate([
 ]);
 
 Returns item and calculated total cost. Removes _id.
-
-vi) $sort – Sort results
- db.orders.aggregate([
-  { $sort: { price: -1 } } // Descending
-]);
-
-vii) $skip – Skip certain number of documents
-db.orders.aggregate([
-  { $skip: 5 }
-]);		
-
-✅ Skips the first 5 documents — useful for pagination.
 
 vii) $count – Counts documents
 db.orders.aggregate([

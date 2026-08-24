@@ -386,5 +386,20 @@ App.get(): handles only GET requests for a specific route.
 
 types : app level (app.use), router level (router.use(..)), built in (espres.json, urlencoded, static), error handling (err,req,res,next), third party middleware (cors, helmet,morgan)
 
+QUES 11 : OSI Model = Open Systems Interconnection Model or network layering 
+
+It is a 7-layer model used to understand how data travels between two devices over a network.
+
+| Layer               | What happens                                      | Example                        |
+| ------------------- | ------------------------------------------------- | ------------------------------ |
+| **7. Application**  | Defines the application-level request/data        | HTTP `GET /users`              |
+| **6. Presentation** | Translates, encrypts, or compresses the data      | JSON, TLS, compression         |
+| **5. Session**      | Establishes and manages the communication session | Session management             |
+| **4. Transport**    | Provides end-to-end delivery between applications | TCP/UDP, ports                 |
+| **3. Network**      | Moves packets between different networks          | IP addresses, routing          |
+| **2. Data Link**    | Moves frames between devices on the same network  | MAC addresses, Ethernet/Wi-Fi  |
+| **1. Physical**     | Transmits bits as physical signals                | Electrical/radio/light signals |
+
+
 
 

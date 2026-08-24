@@ -504,6 +504,11 @@ function getTime() {
 console.log(getTime());
 console.log(getTime());
 
+QUES 16:Web workers vs service workers
+
+Web Worker = move heavy JavaScript work away from the UI.
+Service Worker = sit between the web app and the network, so you can do things like caching and offline support.
+
                                                    -------------------REACT----------------------------
 
 
@@ -580,14 +585,9 @@ useCallback: Prevents function re-creation on each render.
 Reduces initial bundle size.
 
 4. Avoid Anonymous Functions in JSX
-5. Pagination or Virtualization for Large Lists
-Renders only visible items in a list.
-
-6. Bundle Optimization
-Tree shaking (remove unused code)
-Minification (via Webpack/Terser)
-Dynamic imports
-Avoid large libraries if smaller alternatives exist
+5. Pagination or Virtualization for Large Lists. Renders only visible items in a list.
+6. Bundle Optimization. Tree shaking (remove unused code) ,Minification (via Webpack/Terser)
+ Dynamic imports : Avoid large libraries if smaller alternatives exist
 
 7. Image and Asset Optimization
 Compress images (WebP, AVIF)

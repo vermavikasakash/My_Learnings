@@ -20,7 +20,7 @@ const rateLimiter = (req, res, next) => {
     const user = req.ip;
     const now = Date.now();
     // 1st if not seen 
-      if (!map.has(user))  map.set(user, {count: 1,  startTime: now }); return next();
+      if (!map.has(user)) { map.set(user, {count: 1,  startTime: now }); return next();}
     // Reset the window after 10 seconds 
      const data = map.get(user);
      if (now - data.startTime > 10000) map.set(user, {count: 1,startTime: now});return next();
@@ -110,13 +110,13 @@ io.on("connection", (socket) => {
   });
 });
 
-// Frontend
+// Frontend import io.client
   useEffect(() => 
-    socket.on("message", (data) => setMessages((prev) => [...prev, data]))
+    socket.on("message", (data) => setReceivedMessages((prev) => [...prev, data]))
   , []);
 
   const sendMessage = () => {
-    socket.emit("message", message);
+    socket.emit("message", text);
   };
 
 // ---------Cache

@@ -9,10 +9,14 @@ node/express : Create paginated API , Create search API, JWT Authentication (Gen
                GET /products?q=phonepage=1&limit=10
 
 mongo : Query with pagination (Model.find().skip().limit()), Aggregation (Group orders by user and count total)
-sql :        Get top 3 highest salary employees SELECT * FROM employees ORDER BY salary DESC LIMIT 3; or use nested query
+sql :        Get top 2 highest salary employee (use nested query or order by)
 
             Group By + Having, JOIN query, Find duplicates (--SELECT name, COUNT(*) FROM table GROUP BY name HAVING COUNT(*) > 1;
             Pagination in SQL (LIMIT 10 OFFSET 20)
+
+WHERE - filter rows
+GROUP BY - create groups row based
+HAVING - filter groups
 
 CSS-
 1.Difference between rem,em,px
@@ -38,6 +42,7 @@ JS/TS-
 13.What is object prototype.
 14.Memory leak in js 
 15.What is pure functions
+16.Web workers vs service workers
 
 REACT-
 1.In react how we can call an api before rendering the ui
