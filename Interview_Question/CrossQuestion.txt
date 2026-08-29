@@ -61,6 +61,7 @@ Tomorrow: Analytics,Inventory,Email
 Fanout broadcasts the event to all bound queues.
 
 Q9. Tell me in one sentence why RabbitMQ exists in your project.?
+
 "RabbitMQ is used only for asynchronous event notifications. After a business operation successfully completes, the service publishes an event so interested consumers, such as the Gateway for real-time Socket.IO updates or future analytics and notification services, can react without tightly coupling the services."
 
 Q.10 How did you integrate Razorpay/payment service?
@@ -75,9 +76,44 @@ How do you know your generated signature is correct?
 
 For a production system, I would add Razorpay webhooks as an additional server-to-server mechanism so that payment state can still be reconciled if the browser disconnects."
 
--------------------------------------------------------------------- DocMind AI ------------------------------------------:
+Q : diff in Kafka and RabbitMQ 
+"RabbitMQ is primarily a message broker designed around queues and reliable message delivery, making it a good fit for background jobs and service-to-service tasks. Kafka is a distributed event-streaming platform where events are persisted and consumers track their own offsets, making it particularly useful for high-throughput event streams, multiple independent consumers, and replaying historical events."
 
+RabbitMQ flow :
+
+Producer → Exchange → Routing Key → Queue → Consumer → ACK/NACK → DLQ → Prefetch
+
+
+-------------------------------------------------------------------- DocMind AI ------------------------------------------:
 See the flow diagram
+
+follow ups :
+Ques1 : What will -what will happen if you are storing whole PDF as a page instead of chunk ?
+Ans ✅: "I wouldn't store the whole PDF as a single embedding because it will blur the meaning and hurt retrieval accuracy, plus you might hit model token limits."
+Then explain the tradeoff. "Instead, I chunk the document into semantically meaningful pieces with a bit of overlap. That gives me much better retrieval relevance and reduces token bloat." 
+Q : "Why not one sentence per chunk?" 
+"Too small loses context. Too large loses precision. So we balance size and overlap and measure retrieval quality."
+
+Ques2 : why did you choose a vector database like ChromaDB or Pinecone instead of just storing chunks in MongoDB and doing text search?
+Ans ✅:It's because you need semantic similarity search. Embeddings capture meaning and vector DBs index for that.
+ Keyword search in Mongo can miss meaning. So if your PDF says Node.js is an asynchronous runtime and the user asks how does Node handle concurrent requests, keywords might miss. 
+
+QUES3 : Imagine you now have one million PDFs and thousands of concurrent users. Search latency is climbing and embeddings are a bottleneck. how you'd scale the ingestion and retrieval paths.
+Ans ✅: 
+Ingestion: Upload PDFs to S3, publish document IDs to RabbitMQ, and horizontally scale workers. For large PDFs, split processing into chunk-level jobs and use retries/idempotency.
+Embeddings: Batch embedding requests and process them asynchronously; increase worker concurrency while respecting the embedding API rate limits.
+Retrieval: Horizontally scale the vector database, add proper vector indexes, and partition/filter by document or tenant where possible.
+Caching: Use Redis for frequently repeated queries/results.
+Monitoring: Track queue depth, embedding latency, retrieval latency, error/retry rates, and DLQ size.
+
+QUES4: what if one PDF is 5 gigabytes and another is two pages? How do you keep big jobs from blocking the line?
+“I’d prevent large PDFs from blocking small jobs by separating workloads.
+
+For example, I’d have small and large PDF queues. Small PDFs go to dedicated workers for low latency, while large PDFs go to separate workers. For a 5 GB PDF, I’d also process it in chunks or smaller jobs rather than treating the entire PDF as one task.
+
+QUES5: How can you give more precise answer from rag
+Chunk overlap, hybrid search (mixes keyword and vector),
+adjusting top k (how many junks we will pull), Metadata filtering (narrows search space and looks inside specific document which we are fetching)
 
 -------------------------------------OAuth (Google)--------------------------
 1.When the user clicks 'Continue with Google', the frontend redirects them to Google's OAuth server.
@@ -143,6 +179,10 @@ Class- Object || Image-Conatiner
 4. Difference between Image and Container
 Blueprint, running Application
 
+5. Containerization & volumes
+"Containerization packages an application and its dependencies into an isolated container. 
+ Docker volumes provide persistent storage outside the container's lifecycle, so data isn't lost when the container is recreated or removed."
+
 5. Why Docker?
 
 "It eliminates the 'works on my machine' problem by packaging the application and its dependencies into a portable container."
@@ -150,13 +190,19 @@ Blueprint, running Application
 6. Commands
 Build image : docker build -t ecommerce .
 Delete image : docker rmi imageId
-Run container : docker run -p 5000:5000 ecommerce
+Run container : docker run -p 5000:5000 ecommerce (Host 3000 → Container 3000)
 Stop container : docker stop containerID
 
 List containers : docker ps
 List images : docker images
 
-7. Explain your Dockerfile
+7. Explain your Dockerfile  (.dockerignore used to ignore node_modules or .env., .git)
+Dockerfile -> "What is my application and how do I build it?"
+
+Docker Compose -> "What services does my application need and how do they run together?"
+
+Dockerfile = How to build/run one application
+
 
 FROM node:20                         // base Image
 
@@ -166,7 +212,7 @@ COPY package*.json .                 // copies files
 
 RUN npm install                      // executes while building image i.e RUN npm install	
 
-COPY . .
+COPY . .                             // . source on your computer, . destination inside image
 
 EXPOSE 5000
 
@@ -174,13 +220,28 @@ CMD ["npm","start"]                  // Executed when container starts.
 
 8. Dockekr-compose.yml
 
+Docker Compose = How to run multiple containers together
+
+Suppose your application has: Node.js API, MongoDB, Redis, RabbitMQ
+You could manually run:
+docker run ...
+docker run ...
+docker run ...
+docker run ... (That's annoying.)
+
+Instead, docker-compose.yml describes all of them. and Docker Compose starts all the services.
+docker compose up
+
+
+Dockekr-compose.yml
+
 name: e-commerce (optional)
 
 services:
 
   service-name:
     image: image-name
-    container_name: image-name
+    container_name: container-name
     build: .
     ports:
       - "3000:3000"
@@ -189,10 +250,19 @@ services:
     depends_on:
       - mongodb
 
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+
   mongodb:
     image: mongo
-    ports:
-      - "27017:27017"
+
+  redis:
+    image: redis
+
+  rabbitmq:
+    image: rabbitmq:3-management
 
 //-------------- CICD Using GitHub actions ------------
 explain flow :

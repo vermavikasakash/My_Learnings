@@ -83,7 +83,7 @@ NODE JS-
 11.what is Same-Origin Policy (SOP) & CORS ?
 12. what is Express & middleware
 CRUD. Implement get api using node. send object from server to client
-
+13.What is cron jobs
 
 MONGO DB / SQL -
 CRUD - Monogo and Mysql

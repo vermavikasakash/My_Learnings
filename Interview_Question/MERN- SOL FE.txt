@@ -282,7 +282,13 @@ QUES 9. Promise types & Create promise in js.
 
 Network calls are asynchronous operations because they take time.
 Promises are JavaScript's way of representing the future result of those operations.
+
+async/await gives you a cleaner syntax for working with Promises.
+
 async/await are syntax that make working with Promises much easier to read and write.
+
+async tells this function is handles promise.
+await tells JavaScript: "Wait for this Promise to settle, and give me its resolved value before continuing this async function."
 
 different type of promises 4 :
 Promise.all() : If one fails, the whole promise rejects.

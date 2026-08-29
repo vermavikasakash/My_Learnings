@@ -34,8 +34,14 @@ app.use(rateLimiter);
 
 // ----- Authentication , Protected routes
 const auth = (req, res, next) => {
-  // verify JWT
+ 
+const authHeader = req.headers.authorization;
+if (!authHeader) return res.status(401).json({message: "Token required"});
 
+ const token = authHeader.split(" ")[1];
+// verify token here
+const decoded = jwt.verify(token, JWT_SECRET);
+req.user = user;
   next();
 };
 
@@ -110,7 +116,9 @@ io.on("connection", (socket) => {
   });
 });
 
-// Frontend import io.client
+// Frontend import { io } from "socket.io-client";
+const socket = io.connect("http://localhost:5001");
+
   useEffect(() => 
     socket.on("message", (data) => setReceivedMessages((prev) => [...prev, data]))
   , []);

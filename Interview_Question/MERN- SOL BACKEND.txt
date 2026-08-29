@@ -400,6 +400,16 @@ It is a 7-layer model used to understand how data travels between two devices ov
 | **2. Data Link**    | Moves frames between devices on the same network  | MAC addresses, Ethernet/Wi-Fi  |
 | **1. Physical**     | Transmits bits as physical signals                | Electrical/radio/light signals |
 
+13.What is cron jobs
+✅ ANS : A cron job is a task that runs automatically at a scheduled time.
+npm i node-cron
+const cron = require("node-cron");
+
+cron.schedule("* * * * *", () => {
+  console.log("Cron job running");
+});
+
+where * * * * * means: Every minute, every hour, every day, every month, regardless of the day of the week.
 
 
 
