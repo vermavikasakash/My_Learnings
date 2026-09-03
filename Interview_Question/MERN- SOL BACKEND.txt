@@ -233,7 +233,13 @@ Authorization is the process of determining what actions an authenticated user c
 Authorization typically involves: Role-based access control (RBAC), Attribute-based access control (ABAC) i.e policy based, Access control lists (ACLs) i.e users or groups
 
 QUES 6. fork and spawn in node
-ANS ✅ "Node.js is single-threaded for JavaScript execution, so CPU-intensive tasks can block the event loop. The child_process module allows us to run work in separate operating system processes. spawn() is used for running external programs with streamed output, exec() runs shell commands and buffers the entire output, execFile() executes a binary directly without a shell, and fork() creates another Node.js process with built-in IPC for communication."
+ANS ✅ "Node.js is single-threaded for JavaScript execution, so CPU-intensive tasks can block the event loop. 
+A worker thread runs JavaScript in another thread within the same Node.js process and is useful for CPU-intensive work without blocking the main event loop. 
+
+A child process is a separate OS process with its own memory and event loop. 
+For scaling a Node.js API, I would generally run multiple Node.js instances and put a load balancer in front of them, rather than relying on a single Node process. If I have CPU-heavy work, I can use worker threads or move that work to separate worker processes. Shared state should be kept in external systems such as Redis or a database because individual Node processes don't share memory."
+
+The child_process module allows us to run work in separate operating system processes. spawn() is used for running external programs with streamed output, exec() runs shell commands and buffers the entire output, execFile() executes a binary directly without a shell, and fork() creates another Node.js process with built-in IPC for communication."
 
 QUES 7.Difference between running js on browser and on node js
 ✅ ANS:

@@ -76,6 +76,9 @@ How do you know your generated signature is correct?
 
 For a production system, I would add Razorpay webhooks as an additional server-to-server mechanism so that payment state can still be reconciled if the browser disconnects."
 
+Q. The payment request is slow, and the user retries from another tab. How do you prevent double charging?"
+Ans ✅ : "I would use an idempotency key for the payment operation so retries of the same payment request don't create another charge. Additionally, I'd enforce a business-level constraint that an order can have only one successful payment, using a transactional state transition. If the first payment is still processing, the second request returns the existing payment status rather than initiating another charge."
+
 Q : diff in Kafka and RabbitMQ 
 "RabbitMQ is primarily a message broker designed around queues and reliable message delivery, making it a good fit for background jobs and service-to-service tasks. Kafka is a distributed event-streaming platform where events are persisted and consumers track their own offsets, making it particularly useful for high-throughput event streams, multiple independent consumers, and replaying historical events."
 
@@ -83,6 +86,155 @@ RabbitMQ flow :
 
 Producer → Exchange → Routing Key → Queue → Consumer → ACK/NACK → DLQ → Prefetch
 
+Q: how will you scale RabbitMQ
+To scale RabbitMQ, I would think about both the consumers and the RabbitMQ cluster itself.
+
+1. Scale consumers first
+If messages are accumulating:
+
+RabbitMQ -> Queue: 100,000 messages, Add more consumer instances:
+             Queue
+          ↙    ↓    ↘
+     Consumer  Consumer  Consumer
+        1         2         3
+
+RabbitMQ distributes messages among consumers.
+
+ii. Tune consumers with prefetch : Use prefetch to control how many unacknowledged messages a consumer can hold.
+
+"I'd use RabbitMQ's prefetch setting. If I set prefetch(1), RabbitMQ sends only one unacknowledged message to a consumer at a time. Once the consumer processes the message and sends an ACK, RabbitMQ sends the next message."
+
+One small distinction: prefetch doesn't mean the queue itself is blocked. Other consumers can continue receiving messages. It limits delivery to that particular consumer.
+
+2. Use multiple queues when needed : If one queue becomes a bottleneck, you can partition the workload across multiple queues.
+                 Exchange
+              ↙     ↓      ↘
+          Queue 1  Queue 2  Queue 3
+             ↓       ↓        ↓
+        Consumers Consumers Consumers
+
+The routing strategy depends on your use case.
+
+3. Scale RabbitMQ itself with a cluster : Instead of running one RabbitMQ server, run multiple RabbitMQ nodes
+
+RabbitMQ
+   ↓
+Single point of failure ❌
+
+run multiple RabbitMQ nodes:
+
+RabbitMQ Node 1
+RabbitMQ Node 2
+RabbitMQ Node 3
+
+This provides high availability and allows RabbitMQ infrastructure to handle more workload.
+
+4. Use appropriate queue replication
+
+For important queues, RabbitMQ supports replicated queue designs such as quorum queues.
+
+This protects against losing messages when a RabbitMQ node fails.
+
+There is a trade-off:
+
+More replication → better durability/availability → more storage and network overhead.
+
+Q : how will you make sure each consumer or queue will process a task once
+RabbitMQ can provide at-least-once delivery, but it does not guarantee that your business task executes exactly once. ACK alone doesn't guarantee exactly-once processing.
+
+"RabbitMQ provides at-least-once delivery rather than true exactly-once processing. A message is normally delivered to one consumer and acknowledged after successful processing. However, if the consumer crashes before the ACK, RabbitMQ can redeliver the message. Therefore, for business-critical operations, I'd make the consumer idempotent using a unique task or event ID and a database unique constraint or equivalent atomic operation. That way, even if the same message is delivered twice, the business operation happens only once."
+
+Queue distribution → Who gets the message?
+
+ACK → Did the consumer successfully process it?
+
+Idempotency → What happens if the same message is delivered again?
+
+Q: How would you implement refresh-token reuse detection?
+
+"I'd maintain refresh-token sessions server-side. Each refresh token belongs to a token family, and I'd store a hash of the token along with its family ID, user ID, expiry and revocation status. On every refresh, I'd invalidate the current token and issue a new one. If a previously revoked token is presented again, I'd treat it as possible token theft and revoke the entire token family."
+
+Q: How will you prevent pagination tracks if new entry got created?
+I'd use a deterministic sort such as (createdAt, id).
+"With cursor pagination, I don't track a row number. I track the values of a stable, deterministic sort key. For example, I can use (createdAt, id) as the cursor. New records inserted before my current position won't affect the next page because the query asks for records after the cursor. If the user changes the sort order, the existing cursor is no longer valid, so I reset the cursor and start a new pagination sequence."
+
+Ques: Suppose S3 has 1 million records, and your backend has already inserted 100,000 into MySQL/MongoDB.
+ (large data import + resumability + idempotency problem)
+ idempotent insert or upsert + checkpoint
+"I would process the S3 data in batches rather than loading all 1 million records at once. I'd create an import job and persist its progress after each successfully processed batch. If the process or network fails after 100,000 records, I can resume from the saved checkpoint. However, the checkpoint alone isn't sufficient because the process could crash after inserting a batch but before saving the checkpoint. So I'd also give every source record a unique ID and enforce a unique constraint in the target database, using an idempotent insert or upsert. This way, even if a batch is retried, records that were already inserted won't be duplicated."
+
+Ques: One of your microservice is slow how will you acknowledge the bottleneck and fix for that
+"First, I would check the monitoring and logs to see the API latency and identify where the request is spending its time. I'd check the database, Redis, downstream services and external APIs. Once I find the slow component, I'd fix that specific bottleneck—for example, optimize a slow DB query or add an index if the database is the issue. If the service is overloaded because of high traffic, then I'd scale it horizontally. After the fix, I'd verify the latency and error rate again."
+
+Ques : Payment full flow ?
+Ans ✅: 
+"When the user clicks Pay, the backend first creates an order (order table) with PENDING_PAYMENT status and creates a payment record (in payment table) with PENDING status along with an idempotency key. The client then opens the ICICI checkout and the user completes the payment.
+
+Once the client sends the payment response back, my backend first verifies the payment signature using the provider's secret key. If the signature is valid, I start a database transaction.
+
+Inside the transaction, I use a conditional atomic update to change the payment from PENDING to SUCCESS. This prevents the same payment confirmation from being processed twice. Then I update the order to PAID, atomically decrement the inventory only if stock is available, and create a successful transaction record.
+
+Since these operations are inside an ACID transaction, if all operations succeed, I commit. If any operation fails, I roll everything back.
+
+So the atomic updates handle individual concurrent or duplicate operations, while the ACID transaction ensures consistency across the multiple database changes.
+
+If the payment confirmation is delayed or a webhook is missed, I keep the payment in PENDING and use reconciliation with the payment provider to determine the final status later."
+
+Ques : how will you prevent duplicate payment or network failure issues ?
+Ans ✅:"For duplicate payments, I'd use an idempotency key for each payment attempt and enforce uniqueness on the server side. I'd also pass the idempotency key to the payment provider if they support it.
+
+For network failures, I wouldn't immediately mark the payment as failed because the request may have reached the provider and the payment may have succeeded even though I didn't receive the response. I'd query the provider using the payment reference and also handle provider webhooks or reconciliation to determine the final state.
+
+A webhook is push. The provider calls your server to tell you the payment result. Reconciliation is pull. Your server asks the provider for the transaction status if the webhook doesn't arrive. In interviews, just say webhook is preferred, reconciliation is fallback.
+Wait for a webhook for a short window, like up to2 minutes. If it doesn't arrive, enqueue a reconciliation job with backoff. That prevents hammering the provider. Now, suppose the webhook and the reconciliation job hit at the same time. How do you prevent double updates or duplicate notifications (idempotency)?
+
+Additionally, I can use a distributed lock or an atomic database state transition to prevent concurrent payment attempts for the same order, but those are secondary protections rather than replacements for idempotency."
+
+
+"findOneAndUpdate() itself is an atomic operation, not a locking strategy. When I use a conditional update such as stock: {$gt: 0}, it behaves like an optimistic concurrency-control pattern because I don't acquire a lock; I rely on the database to atomically verify the condition and update the document."
+
+"Optimistic locking assumes conflicts are relatively rare. We don't lock the record while reading; instead, we attach a version and verify that the version hasn't changed when we update. If it changed, we reject or retry the operation."
+
+Pessimistic approach means: "Before modifying the data, acquire a lock so nobody else can modify it."
+
+
+User clicks Pay twice
+        ↓
+Idempotency key       → prevent duplicate payment
+        +
+Distributed lock      → prevent concurrent processing : 
+("A distributed lock can additionally prevent concurrent payment attempts for the same order, but I wouldn't rely on it as the sole protection.")
+        +
+DB state transition   → protect payment state
+        +
+Provider webhook/
+reconciliation        → determine actual payment result
+
+UPDATE payments
+SET status = 'PROCESSING'
+WHERE payment_id = ?
+AND status = 'PENDING';  
+
+// If another request tries the same operation, it won't be able to transition the same payment from PENDING again.
+PENDING → PROCESSING → SUCCESS
+
+Ques : Suppose your product service caches product details in Redis. Seller updates the price from 1000 rupees to 900, but some users still see 1000 for a few minutes. Why did that happen? How would you debug it? How would you fix it? And what caching strategy would you choose?
+
+Ans ✅: DB updated, but Redis still had old stale value." Debug by comparing DB vs. Redis, check TTL and invalidation path. Fix with cache aside. On update, delete or refresh key. TTL is a fallback, not the primary fix.
+
+so in a cache-aside pattern, the database is the source of truth. So the usual idea for updates is write to the DB first. Then either delete the corresponding cache key or update it. Most teams just delete after a successful DB write. Then on the next read, if the key is missing, you fetch from DB and repopulate Redis. So TTL is just a safety net, not the main mechanism.
+
+Ques :You delete the cache key, ten thousand users request that product at once. How do you prevent a stampede on your DB?
+Ans ✅: that's called a cache stampede. The most common fix is a distributed lock. Only the first request grabs the lock, rebuilds the cache, and everyone else briefly waits or retries Redis. Other patterns also help. Stale-while-revalidate, serve slightly stale data while a background job refreshes, cache warming for hot keys, and randomized TTLs to avoid mass expiry. If asked in an interview, say "I'd use a Redis lock so only one request rebuilds the cache, others back off and retry, and that's exactly what most teams do in production.
+
+Ques : Suppose RabbitMQ is down for fifteen minutes, but orders are still being created. What would you do so that no payment request gets lost?
+Ans ✅: Outbox Pattern. So instead of "create order then publish to RabbitMQ", you write both the order and an outbox event in the same DB transaction. Then a separate background publisher reads from the outbox and publishes to RabbitMQ with retries. So if RabbitMQ is down, the event just sits in your DB and will be published later.
+
+Ques : Now the next tricky part. What if that publisher crashes after sending to RabbitMQ but before marking the outbox row as sent? How do you avoid double-processing the payment?
+Ans ✅: Make the consumer idempotent. Same payment ID processed only once.
+
+Ques : Suppose your payment service processes successfully, but the acknowledgment back to RabbitMQ never happens. So the message gets redelivered. Walk me through how your system behaves end-to-end.
+Ans ✅: This is another classic at-least-once delivery case, and it goes like this. The payment service processes the message, updates the payment row from pending to success in an atomic conditional update, and commits. But the ack never reaches RabbitMQ. So RabbitMQ redelivers. On redelivery, the consumer checks the payment status, sees it's already success, and skips the business logic, then just acks. Net effect... one payment, one state transition, no duplicate emails, and you still ack the duplicate.
 
 -------------------------------------------------------------------- DocMind AI ------------------------------------------:
 See the flow diagram
@@ -429,6 +581,6 @@ I also have experience working with real-world concepts like authentication, pay
 Most importantly, I’m someone who learns quickly and takes ownership of the work. I believe I can contribute to the team while continuing to grow with the role.
 
 // salary expectation
-Based on my experience and the responsibilities of this role, I'm expecting around 9 to 11 LPA. However, I'm open to discussing it based on the overall opportunity and role.
+Based on my experience and the responsibilities of this role, I'm expecting around 10 to 12 LPA. However, I'm open to discussing it based on the overall opportunity and role.
 
 
