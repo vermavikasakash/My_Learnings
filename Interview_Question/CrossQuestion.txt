@@ -2,6 +2,269 @@ Monolithic architecture: The application is built as a single deployable unit, w
 
 Microservices architecture: The application is divided into multiple independently deployable services, where each service owns a specific business capability, such as auth service, order service, payment service, etc.
 
+
+Ques1 : OAuth (Google)
+Ans ✅:
+1.When the user clicks 'Continue with Google', the frontend redirects them to Google's OAuth server.
+2.After the user logs in and grants permission, Google redirects back to our backend with an authorization code. 
+3.The backend exchanges this authorization code for an access token, 
+then uses the access token to fetch the user's profile information like name and email from Google's UserInfo API (Google validates the token and returns the user's profile information).
+
+4.If the user doesn't exist, we create a new account. 
+5.Finally, our backend generates its own JWT and sends it to the frontend. From that point onward, the frontend authenticates with our backend using the JWT rather than Google's access token
+
+Google redirects to your callback route: GET /auth/google/callback?code=abc123  --auth code
+
+app.get("/auth/google/callback", async (req, res) => {
+    const code = req.query.code;
+
+    // Exchange the code for an access token
+});
+
+3rd point how it works behind the schenes
+
+API Call 1: Get Access Token with help of authorization code
+
+Your backend sends:
+POST https://oauth2.googleapis.com/token
+
+Google returns:
+{
+  "access_token": "ya29.a0Af...",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+}
+
+API Call 2: Get User Profile
+
+Now your backend uses that access token.
+GET https://www.googleapis.com/oauth2/v2/userinfo
+Authorization: Bearer ya29.a0Af...
+
+Now Google returns:
+{
+  "id": "123456789",
+  "email": "vikas@gmail.com",
+  "verified_email": true,
+  "name": "Vikas Verma",
+  "picture": "https://...."
+}
+
+Q: How would you implement refresh-token reuse detection?
+
+"I'd maintain refresh-token sessions server-side. Each refresh token belongs to a token family, and I'd store a hash of the token along with its family ID, user ID, expiry and revocation status. On every refresh, I'd invalidate the current token and issue a new one. If a previously revoked token is presented again, I'd treat it as possible token theft and revoke the entire token family."
+
+
+Ques2 : How does your notification service work, and how will you handle scale? How will you scale message broker in your application?
+
+Ans ✅: “In my notification system, whenever an event occurs, for example an order is completed or some user activity happens, the service publishes a notification event to RabbitMQ.
+
+RabbitMQ acts as a buffer between the application and the notification workers. The workers consume these messages and process the notification based on the type, such as email, push notification, or in-app notification.
+
+For real-time in-app updates, after the worker processes the event, we can use Socket.IO to push the notification to the connected client. For email or push notifications, we use third-party providers.
+
+For reliability, I use retries for temporary failures and a DLQ for messages that continue to fail. I also make the consumer idempotent using an idempotency key, so if RabbitMQ redelivers the same message, we don't send the same notification multiple times.”
+
+Scale ✅:
+“If the notification volume increases significantly, I would horizontally scale the notification workers. Since RabbitMQ is buffering the messages, multiple workers can consume messages from the queue in parallel.
+
+I would monitor queue depth and processing latency. If the queue starts growing, I can increase the number of workers or autoscale them based on queue depth.
+
+I would also separate different workloads if necessary, for example email, push, and high-priority notifications into different queues, so one slow provider doesn't block other notifications.”
+
+“RabbitMQ gives me buffering, and I scale the consumers horizontally based on queue depth. Idempotency prevents duplicate processing, while retries and DLQ handle failures.”
+
+Ques 3 : diff in Kafka and RabbitMQ & Scaling
+Ans ✅: "RabbitMQ is primarily a message broker designed around queues and reliable message delivery, making it a good fit for background jobs and service-to-service tasks. Kafka is a distributed event-streaming platform where events are persisted and consumers track their own offsets, making it particularly useful for high-throughput event streams, multiple independent consumers, and replaying historical events."
+
+RabbitMQ flow : Producer → Exchange → Routing Key → Queue → Consumer → ACK/NACK → DLQ → Prefetch
+
+Scale ✅:
+To scale RabbitMQ, I would think about both the consumers and the RabbitMQ cluster itself.
+
+1. Scale consumers first
+If messages are accumulating:
+
+RabbitMQ -> Queue: 100,000 messages, Add more consumer instances:
+             Queue
+          ↙    ↓    ↘
+     Consumer  Consumer  Consumer
+        1         2         3
+
+RabbitMQ distributes messages among consumers.
+
+ii. Tune consumers with prefetch : Use prefetch to control how many unacknowledged messages a consumer can hold.
+
+"I'd use RabbitMQ's prefetch setting. If I set prefetch(1), RabbitMQ sends only one unacknowledged message to a consumer at a time. Once the consumer processes the message and sends an ACK, RabbitMQ sends the next message."
+
+One small distinction: prefetch doesn't mean the queue itself is blocked. Other consumers can continue receiving messages. It limits delivery to that particular consumer.
+
+2. Use multiple queues when needed : If one queue becomes a bottleneck, you can partition the workload across multiple queues.
+                 Exchange
+              ↙     ↓      ↘
+          Queue 1  Queue 2  Queue 3
+             ↓       ↓        ↓
+        Consumers Consumers Consumers
+
+The routing strategy depends on your use case.
+
+3. Scale RabbitMQ itself with a cluster : Instead of running one RabbitMQ server, run multiple RabbitMQ nodes
+
+RabbitMQ
+   ↓
+Single point of failure ❌
+
+run multiple RabbitMQ nodes:
+
+RabbitMQ Node 1
+RabbitMQ Node 2
+RabbitMQ Node 3
+
+This provides high availability and allows RabbitMQ infrastructure to handle more workload.
+
+4. Use appropriate queue replication
+
+For important queues, RabbitMQ supports replicated queue designs such as quorum queues.
+
+This protects against losing messages when a RabbitMQ node fails.
+
+There is a trade-off:
+
+More replication → better durability/availability → more storage and network overhead.
+
+Q : how will you make sure each consumer or queue will process a task once?
+RabbitMQ can provide at-least-once delivery, but it does not guarantee that your business task executes exactly once. ACK alone doesn't guarantee exactly-once processing.
+
+"RabbitMQ provides at-least-once delivery rather than true exactly-once processing. A message is normally delivered to one consumer and acknowledged after successful processing. However, if the consumer crashes before the ACK, RabbitMQ can redeliver the message. Therefore, for business-critical operations, I'd make the consumer idempotent using a unique task or event ID and a database unique constraint or equivalent atomic operation. That way, even if the same message is delivered twice, the business operation happens only once."
+
+Queue distribution → Who gets the message?
+ACK → Did the consumer successfully process it?
+Idempotency → What happens if the same message is delivered again?
+
+Ques4 : How will you scale redis in your application?
+Ans ✅: 
+Problem: "As traffic and cached data increase, a single Redis instance can become a memory and throughput bottleneck, and it can also become a single point of failure."
+
+Reason: "So I need both horizontal scalability and high availability."
+
+Execution: "I'd use Redis Cluster to partition data across multiple nodes and replicas for high availability. I'd configure TTL and appropriate eviction policies for cache data. At the application level, I'd use timeouts and graceful fallback to the database for cache reads."
+
+Trade-off/Benefit: "This gives us higher throughput, larger cache capacity, and fault tolerance, but introduces operational complexity and issues such as cross-slot operations and cache consistency that we need to handle."
+
+Q : What if Redis is being used for distributed locking and Redis fails?
+Ans ✅: 
+Problem: If Redis is being used as a distributed lock, we can't simply fall back to the database when Redis fails. The lock is protecting a critical section, so losing the lock mechanism could allow multiple instances to perform the same operation concurrently.
+
+Reason: Therefore, we need to decide whether the operation can safely proceed without the lock. If it cannot, the safer approach is to fail the operation temporarily rather than execute without a lock.
+
+Execution: I'd use Redis with replication and automatic failover to reduce the chance of lock-service failure. I'd also give locks a TTL so that a crashed process doesn't hold a lock forever. The application should have a timeout when acquiring the lock and retry with backoff if appropriate. If Redis becomes unavailable, the application should stop attempting the critical operation and return a temporary failure rather than blindly proceeding.
+
+Trade-off: This prioritizes correctness over availability. During a Redis outage, some operations may temporarily fail, but we avoid concurrent execution that could corrupt data or cause duplicate processing.
+
+Ques 5: Payment full flow ?
+Ans ✅: 
+"When the user clicks Pay, the backend first creates an order (order table) with PENDING_PAYMENT status and creates a payment record (in payment table) with PENDING status along with an idempotency key. The client then opens the ICICI checkout and the user completes the payment.
+
+Once the client sends the payment response back, my backend first verifies the payment signature using the provider's secret key. If the signature is valid, I start a database transaction.
+
+Inside the transaction, I use a conditional atomic update to change the payment from PENDING to SUCCESS. This prevents the same payment confirmation from being processed twice. Then I update the order to PAID, atomically decrement the inventory only if stock is available, and create a successful transaction record.
+
+Since these operations are inside an ACID transaction, if all operations succeed, I commit. If any operation fails, I roll everything back.
+
+So the atomic updates handle individual concurrent or duplicate operations, while the ACID transaction ensures consistency across the multiple database changes.
+
+If the payment confirmation is delayed or a webhook is missed, I keep the payment in PENDING and use reconciliation with the payment provider to determine the final status later."
+
+Q : how will you prevent duplicate payment or network failure issues ?
+Ans ✅:"For duplicate payments, I'd use an idempotency key for each payment attempt and enforce uniqueness on the server side. I'd also pass the idempotency key to the payment provider if they support it.
+
+For network failures, I wouldn't immediately mark the payment as failed because the request may have reached the provider and the payment may have succeeded even though I didn't receive the response. I'd query the provider using the payment reference and also handle provider webhooks or reconciliation to determine the final state.
+
+A webhook is push. The provider calls your server to tell you the payment result. Reconciliation is pull. Your server asks the provider for the transaction status if the webhook doesn't arrive. In interviews, just say webhook is preferred, reconciliation is fallback.
+Wait for a webhook for a short window, like up to2 minutes. If it doesn't arrive, enqueue a reconciliation job with backoff. That prevents hammering the provider. Now, suppose the webhook and the reconciliation job hit at the same time. How do you prevent double updates or duplicate notifications (idempotency)?
+
+Additionally, I can use a distributed lock or an atomic database state transition to prevent concurrent payment attempts for the same order, but those are secondary protections rather than replacements for idempotency."
+
+
+"findOneAndUpdate() itself is an atomic operation, not a locking strategy. When I use a conditional update such as stock: {$gt: 0}, it behaves like an optimistic concurrency-control pattern because I don't acquire a lock; I rely on the database to atomically verify the condition and update the document."
+
+"Optimistic locking assumes conflicts are relatively rare. We don't lock the record while reading; instead, we attach a version and verify that the version hasn't changed when we update. If it changed, we reject or retry the operation."
+
+Pessimistic approach means: "Before modifying the data, acquire a lock so nobody else can modify it."
+
+
+User clicks Pay twice
+        ↓
+Idempotency key       → prevent duplicate payment
+        +
+Distributed lock      → prevent concurrent processing : 
+("A distributed lock can additionally prevent concurrent payment attempts for the same order, but I wouldn't rely on it as the sole protection.")
+        +
+DB state transition   → protect payment state
+        +
+Provider webhook/
+reconciliation        → determine actual payment result
+
+UPDATE payments
+SET status = 'PROCESSING'
+WHERE payment_id = ?
+AND status = 'PENDING';  
+
+// If another request tries the same operation, it won't be able to transition the same payment from PENDING again.
+PENDING → PROCESSING → SUCCESS
+
+Ques : Suppose your product service caches product details in Redis. Seller updates the price from 1000 rupees to 900, but some users still see 1000 for a few minutes. Why did that happen? How would you debug it? How would you fix it? And what caching strategy would you choose?
+
+Ans ✅: DB updated, but Redis still had old stale value." Debug by comparing DB vs. Redis, check TTL and invalidation path. Fix with cache aside. On update, delete or refresh key. TTL is a fallback, not the primary fix.
+
+so in a cache-aside pattern, the database is the source of truth. So the usual idea for updates is write to the DB first. Then either delete the corresponding cache key or update it. Most teams just delete after a successful DB write. Then on the next read, if the key is missing, you fetch from DB and repopulate Redis. So TTL is just a safety net, not the main mechanism.
+
+Ques :You delete the cache key, ten thousand users request that product at once. How do you prevent a stampede on your DB?
+Ans ✅: that's called a cache stampede. The most common fix is a distributed lock. Only the first request grabs the lock, rebuilds the cache, and everyone else briefly waits or retries Redis. Other patterns also help. Stale-while-revalidate, serve slightly stale data while a background job refreshes, cache warming for hot keys, and randomized TTLs to avoid mass expiry. If asked in an interview, say "I'd use a Redis lock so only one request rebuilds the cache, others back off and retry, and that's exactly what most teams do in production.
+
+Ques : Suppose RabbitMQ is down for fifteen minutes, but orders are still being created. What would you do so that no payment request gets lost?
+Ans ✅: Outbox Pattern. So instead of "create order then publish to RabbitMQ", you write both the order and an outbox event in the same DB transaction. Then a separate background publisher reads from the outbox and publishes to RabbitMQ with retries. So if RabbitMQ is down, the event just sits in your DB and will be published later.
+
+Ques : Now the next tricky part. What if that publisher crashes after sending to RabbitMQ but before marking the outbox row as sent? How do you avoid double-processing the payment?
+Ans ✅: Make the consumer idempotent. Same payment ID processed only once.
+
+Ques : Suppose your payment service processes successfully, but the acknowledgment back to RabbitMQ never happens. So the message gets redelivered. Walk me through how your system behaves end-to-end.
+Ans ✅: This is another classic at-least-once delivery case, and it goes like this. The payment service processes the message, updates the payment row from pending to success in an atomic conditional update, and commits. But the ack never reaches RabbitMQ. So RabbitMQ redelivers. On redelivery, the consumer checks the payment status, sees it's already success, and skips the business logic, then just acks. Net effect... one payment, one state transition, no duplicate emails, and you still ack the duplicate.
+
+QUES✅ : ACID
+| Property        | Real question                                        |
+| --------------- | ---------------------------------------------------- |
+| **Atomicity**   | **Did the whole transaction happen or none of it?**  |
+| **Consistency** | **Is the resulting database state valid?**           |
+| **Isolation**   | **What happens when transactions run concurrently?** |
+| **Durability**  | **Will committed data survive a failure?**           |
+
+EXAMPLE
+For our bank transfer: Alice ₹1000, Bob   ₹500
+
+BEGIN TRANSACTION
+
+1. Alice -₹200
+2. Bob   +₹200
+
+COMMIT
+Atomicity : Never half the transaction.
+
+Either: Alice ₹800, Bob   ₹700
+
+or, if something fails: Alice ₹1000, Bob   ₹500
+
+Consistency : The resulting state must obey database/business rules:
+
+balance >= 0
+foreign keys valid
+etc.
+
+Isolation : If thousands of transfers happen concurrently, transactions shouldn't incorrectly interfere with each other.
+
+Durability : After COMMIT, a server crash shouldn't make the committed transfer disappear.
+
+
 // --------Project Ecommerce --------
 •  HTTP → Business operations (Product, Auth, Payment, Checkout) 
 •  RabbitMQ → Asynchronous notifications (cart.updated, order.created, payment.completed) 
@@ -79,80 +342,6 @@ For a production system, I would add Razorpay webhooks as an additional server-t
 Q. The payment request is slow, and the user retries from another tab. How do you prevent double charging?"
 Ans ✅ : "I would use an idempotency key for the payment operation so retries of the same payment request don't create another charge. Additionally, I'd enforce a business-level constraint that an order can have only one successful payment, using a transactional state transition. If the first payment is still processing, the second request returns the existing payment status rather than initiating another charge."
 
-Q : diff in Kafka and RabbitMQ 
-"RabbitMQ is primarily a message broker designed around queues and reliable message delivery, making it a good fit for background jobs and service-to-service tasks. Kafka is a distributed event-streaming platform where events are persisted and consumers track their own offsets, making it particularly useful for high-throughput event streams, multiple independent consumers, and replaying historical events."
-
-RabbitMQ flow :
-
-Producer → Exchange → Routing Key → Queue → Consumer → ACK/NACK → DLQ → Prefetch
-
-Q: how will you scale RabbitMQ
-To scale RabbitMQ, I would think about both the consumers and the RabbitMQ cluster itself.
-
-1. Scale consumers first
-If messages are accumulating:
-
-RabbitMQ -> Queue: 100,000 messages, Add more consumer instances:
-             Queue
-          ↙    ↓    ↘
-     Consumer  Consumer  Consumer
-        1         2         3
-
-RabbitMQ distributes messages among consumers.
-
-ii. Tune consumers with prefetch : Use prefetch to control how many unacknowledged messages a consumer can hold.
-
-"I'd use RabbitMQ's prefetch setting. If I set prefetch(1), RabbitMQ sends only one unacknowledged message to a consumer at a time. Once the consumer processes the message and sends an ACK, RabbitMQ sends the next message."
-
-One small distinction: prefetch doesn't mean the queue itself is blocked. Other consumers can continue receiving messages. It limits delivery to that particular consumer.
-
-2. Use multiple queues when needed : If one queue becomes a bottleneck, you can partition the workload across multiple queues.
-                 Exchange
-              ↙     ↓      ↘
-          Queue 1  Queue 2  Queue 3
-             ↓       ↓        ↓
-        Consumers Consumers Consumers
-
-The routing strategy depends on your use case.
-
-3. Scale RabbitMQ itself with a cluster : Instead of running one RabbitMQ server, run multiple RabbitMQ nodes
-
-RabbitMQ
-   ↓
-Single point of failure ❌
-
-run multiple RabbitMQ nodes:
-
-RabbitMQ Node 1
-RabbitMQ Node 2
-RabbitMQ Node 3
-
-This provides high availability and allows RabbitMQ infrastructure to handle more workload.
-
-4. Use appropriate queue replication
-
-For important queues, RabbitMQ supports replicated queue designs such as quorum queues.
-
-This protects against losing messages when a RabbitMQ node fails.
-
-There is a trade-off:
-
-More replication → better durability/availability → more storage and network overhead.
-
-Q : how will you make sure each consumer or queue will process a task once
-RabbitMQ can provide at-least-once delivery, but it does not guarantee that your business task executes exactly once. ACK alone doesn't guarantee exactly-once processing.
-
-"RabbitMQ provides at-least-once delivery rather than true exactly-once processing. A message is normally delivered to one consumer and acknowledged after successful processing. However, if the consumer crashes before the ACK, RabbitMQ can redeliver the message. Therefore, for business-critical operations, I'd make the consumer idempotent using a unique task or event ID and a database unique constraint or equivalent atomic operation. That way, even if the same message is delivered twice, the business operation happens only once."
-
-Queue distribution → Who gets the message?
-
-ACK → Did the consumer successfully process it?
-
-Idempotency → What happens if the same message is delivered again?
-
-Q: How would you implement refresh-token reuse detection?
-
-"I'd maintain refresh-token sessions server-side. Each refresh token belongs to a token family, and I'd store a hash of the token along with its family ID, user ID, expiry and revocation status. On every refresh, I'd invalidate the current token and issue a new one. If a previously revoked token is presented again, I'd treat it as possible token theft and revoke the entire token family."
 
 Q: How will you prevent pagination tracks if new entry got created?
 I'd use a deterministic sort such as (createdAt, id).
@@ -165,76 +354,6 @@ Ques: Suppose S3 has 1 million records, and your backend has already inserted 10
 
 Ques: One of your microservice is slow how will you acknowledge the bottleneck and fix for that
 "First, I would check the monitoring and logs to see the API latency and identify where the request is spending its time. I'd check the database, Redis, downstream services and external APIs. Once I find the slow component, I'd fix that specific bottleneck—for example, optimize a slow DB query or add an index if the database is the issue. If the service is overloaded because of high traffic, then I'd scale it horizontally. After the fix, I'd verify the latency and error rate again."
-
-Ques : Payment full flow ?
-Ans ✅: 
-"When the user clicks Pay, the backend first creates an order (order table) with PENDING_PAYMENT status and creates a payment record (in payment table) with PENDING status along with an idempotency key. The client then opens the ICICI checkout and the user completes the payment.
-
-Once the client sends the payment response back, my backend first verifies the payment signature using the provider's secret key. If the signature is valid, I start a database transaction.
-
-Inside the transaction, I use a conditional atomic update to change the payment from PENDING to SUCCESS. This prevents the same payment confirmation from being processed twice. Then I update the order to PAID, atomically decrement the inventory only if stock is available, and create a successful transaction record.
-
-Since these operations are inside an ACID transaction, if all operations succeed, I commit. If any operation fails, I roll everything back.
-
-So the atomic updates handle individual concurrent or duplicate operations, while the ACID transaction ensures consistency across the multiple database changes.
-
-If the payment confirmation is delayed or a webhook is missed, I keep the payment in PENDING and use reconciliation with the payment provider to determine the final status later."
-
-Ques : how will you prevent duplicate payment or network failure issues ?
-Ans ✅:"For duplicate payments, I'd use an idempotency key for each payment attempt and enforce uniqueness on the server side. I'd also pass the idempotency key to the payment provider if they support it.
-
-For network failures, I wouldn't immediately mark the payment as failed because the request may have reached the provider and the payment may have succeeded even though I didn't receive the response. I'd query the provider using the payment reference and also handle provider webhooks or reconciliation to determine the final state.
-
-A webhook is push. The provider calls your server to tell you the payment result. Reconciliation is pull. Your server asks the provider for the transaction status if the webhook doesn't arrive. In interviews, just say webhook is preferred, reconciliation is fallback.
-Wait for a webhook for a short window, like up to2 minutes. If it doesn't arrive, enqueue a reconciliation job with backoff. That prevents hammering the provider. Now, suppose the webhook and the reconciliation job hit at the same time. How do you prevent double updates or duplicate notifications (idempotency)?
-
-Additionally, I can use a distributed lock or an atomic database state transition to prevent concurrent payment attempts for the same order, but those are secondary protections rather than replacements for idempotency."
-
-
-"findOneAndUpdate() itself is an atomic operation, not a locking strategy. When I use a conditional update such as stock: {$gt: 0}, it behaves like an optimistic concurrency-control pattern because I don't acquire a lock; I rely on the database to atomically verify the condition and update the document."
-
-"Optimistic locking assumes conflicts are relatively rare. We don't lock the record while reading; instead, we attach a version and verify that the version hasn't changed when we update. If it changed, we reject or retry the operation."
-
-Pessimistic approach means: "Before modifying the data, acquire a lock so nobody else can modify it."
-
-
-User clicks Pay twice
-        ↓
-Idempotency key       → prevent duplicate payment
-        +
-Distributed lock      → prevent concurrent processing : 
-("A distributed lock can additionally prevent concurrent payment attempts for the same order, but I wouldn't rely on it as the sole protection.")
-        +
-DB state transition   → protect payment state
-        +
-Provider webhook/
-reconciliation        → determine actual payment result
-
-UPDATE payments
-SET status = 'PROCESSING'
-WHERE payment_id = ?
-AND status = 'PENDING';  
-
-// If another request tries the same operation, it won't be able to transition the same payment from PENDING again.
-PENDING → PROCESSING → SUCCESS
-
-Ques : Suppose your product service caches product details in Redis. Seller updates the price from 1000 rupees to 900, but some users still see 1000 for a few minutes. Why did that happen? How would you debug it? How would you fix it? And what caching strategy would you choose?
-
-Ans ✅: DB updated, but Redis still had old stale value." Debug by comparing DB vs. Redis, check TTL and invalidation path. Fix with cache aside. On update, delete or refresh key. TTL is a fallback, not the primary fix.
-
-so in a cache-aside pattern, the database is the source of truth. So the usual idea for updates is write to the DB first. Then either delete the corresponding cache key or update it. Most teams just delete after a successful DB write. Then on the next read, if the key is missing, you fetch from DB and repopulate Redis. So TTL is just a safety net, not the main mechanism.
-
-Ques :You delete the cache key, ten thousand users request that product at once. How do you prevent a stampede on your DB?
-Ans ✅: that's called a cache stampede. The most common fix is a distributed lock. Only the first request grabs the lock, rebuilds the cache, and everyone else briefly waits or retries Redis. Other patterns also help. Stale-while-revalidate, serve slightly stale data while a background job refreshes, cache warming for hot keys, and randomized TTLs to avoid mass expiry. If asked in an interview, say "I'd use a Redis lock so only one request rebuilds the cache, others back off and retry, and that's exactly what most teams do in production.
-
-Ques : Suppose RabbitMQ is down for fifteen minutes, but orders are still being created. What would you do so that no payment request gets lost?
-Ans ✅: Outbox Pattern. So instead of "create order then publish to RabbitMQ", you write both the order and an outbox event in the same DB transaction. Then a separate background publisher reads from the outbox and publishes to RabbitMQ with retries. So if RabbitMQ is down, the event just sits in your DB and will be published later.
-
-Ques : Now the next tricky part. What if that publisher crashes after sending to RabbitMQ but before marking the outbox row as sent? How do you avoid double-processing the payment?
-Ans ✅: Make the consumer idempotent. Same payment ID processed only once.
-
-Ques : Suppose your payment service processes successfully, but the acknowledgment back to RabbitMQ never happens. So the message gets redelivered. Walk me through how your system behaves end-to-end.
-Ans ✅: This is another classic at-least-once delivery case, and it goes like this. The payment service processes the message, updates the payment row from pending to success in an atomic conditional update, and commits. But the ack never reaches RabbitMQ. So RabbitMQ redelivers. On redelivery, the consumer checks the payment status, sees it's already success, and skips the business logic, then just acks. Net effect... one payment, one state transition, no duplicate emails, and you still ack the duplicate.
 
 -------------------------------------------------------------------- DocMind AI ------------------------------------------:
 See the flow diagram
@@ -267,51 +386,7 @@ QUES5: How can you give more precise answer from rag
 Chunk overlap, hybrid search (mixes keyword and vector),
 adjusting top k (how many junks we will pull), Metadata filtering (narrows search space and looks inside specific document which we are fetching)
 
--------------------------------------OAuth (Google)--------------------------
-1.When the user clicks 'Continue with Google', the frontend redirects them to Google's OAuth server.
-2.After the user logs in and grants permission, Google redirects back to our backend with an authorization code. 
-3.The backend exchanges this authorization code for an access token, 
-then uses the access token to fetch the user's profile information like name and email from Google's UserInfo API (Google validates the token and returns the user's profile information).
 
-4.If the user doesn't exist, we create a new account. 
-5.Finally, our backend generates its own JWT and sends it to the frontend. From that point onward, the frontend authenticates with our backend using the JWT rather than Google's access token
-
-Google redirects to your callback route: GET /auth/google/callback?code=abc123  --auth code
-
-app.get("/auth/google/callback", async (req, res) => {
-    const code = req.query.code;
-
-    // Exchange the code for an access token
-});
-
-3rd point how it works behind the schenes
-
-API Call 1: Get Access Token with help of authorization code
-
-Your backend sends:
-POST https://oauth2.googleapis.com/token
-
-Google returns:
-{
-  "access_token": "ya29.a0Af...",
-  "expires_in": 3600,
-  "token_type": "Bearer"
-}
-
-API Call 2: Get User Profile
-
-Now your backend uses that access token.
-GET https://www.googleapis.com/oauth2/v2/userinfo
-Authorization: Bearer ya29.a0Af...
-
-Now Google returns:
-{
-  "id": "123456789",
-  "email": "vikas@gmail.com",
-  "verified_email": true,
-  "name": "Vikas Verma",
-  "picture": "https://...."
-}
 
 --------------------Docker--------------------
 1. What is Docker?

@@ -417,5 +417,25 @@ cron.schedule("* * * * *", () => {
 
 where * * * * * means: Every minute, every hour, every day, every month, regardless of the day of the week.
 
+13.Processes, thread
+ Processes are separate OS instances with their own memory. Threads live inside a process and share memory. Node's JS runs on one main thread. Worker threads were added for CPU heavy tasks
 
+14.Spawn
+Spawn starts a new process and streams output as it comes. Good for long tasks or big output like making logs.
+Exec runs a shell command and buffers the whole output, so use it for small results.
+ExecFile runs an executable directly without a shell, safer and a bit faster.
+Fork is like spawn, but just for Node processes, and gives you IPC messaging between parent and child.
+
+Why does that distinction matter?
+exec("ls -la")
+
+exec() → runs a command through a shell and buffers the output. ("run this command")
+execFile() → runs a specific executable directly, without going through a shell. ("run this exact program")
+spawn() → starts a process and lets you stream its output. ("start this process and give me its output as it happens")
+
+Node's Cluster module creates worker processes. We call cluster.fork() from the primary process, and Cluster creates separate Node.js worker processes and manages them. 
+This is different from manually using child_process.spawn() or exec(). child_process.fork() is the lower-level API for creating another Node.js process with an IPC channel, while cluster.fork() is specifically for creating and managing Cluster workers."
+
+15. require and import
+"require is CommonJS syntax, while import is ES Module syntax. CommonJS uses module.exports, whereas ESM uses export. import is statically analyzable and supports features like top-level await, while require is a function that can be called dynamically at runtime."
 
