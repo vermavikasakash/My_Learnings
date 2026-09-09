@@ -148,9 +148,9 @@ Because of this influence, I became more team-oriented and proactive in handling
 
 # 7.	Tell me about a time when you received critical feedback from your manager. How did you respond, and what actions did you take to improve?
 
-8.	Describe a situation where you had a disagreement with a colleague or manager. How did you resolve the conflict, and what was the outcome?
+# 8.	Describe a situation where you had a disagreement with a colleague or manager. How did you resolve the conflict, and what was the outcome?
 
-9.	How do you prioritize and manage multiple tasks or projects? Provide an example of a time when you successfully juggled several tasks at once.
+# 9.	How do you prioritize and manage multiple tasks or projects? Provide an example of a time when you successfully juggled several tasks at once.
 **How I prioritize and manage multiple tasks:**
 When I have multiple tasks or projects, I usually prioritize them based on impact, urgency, and dependencies.
 
@@ -182,3 +182,28 @@ pressure + prioritization + collaboration + delivery
 
 11.	How do you handle situations where work assigned to you keeps getting de-prioritized and changed repeatedly? How would you feel about it?
 
+## for all company
+# 10. Why do you want to join our compony ?
+"From the discussions I've had in the previous rounds, I got a good understanding of the kind of engineering problems the team is working on, especially around backend and payments. I found those discussions interesting because I want to work on systems where I can take ownership and go deeper technically. I also feel [company] would give me the opportunity to grow beyond just working on a particular tech stack, which is something I'm looking for at this stage of my career."
+
+# "How many years will you work with us?"
+"I'm looking for a long-term opportunity, not a short-term switch. If I'm getting good learning opportunities, meaningful ownership, and I'm able to contribute to the team, I'd definitely like to stay and grow with the organization for the long term. I wouldn't want to put an exact number of years on it because both the company and my responsibilities will evolve."
+# "Where do you see yourself in 5 years?"
+"In five years, I want to be a strong backend engineer who can take ownership of larger systems end-to-end. I want to be strong not only in implementation but also in system design, architecture, and making engineering decisions. I would also like to mentor other developers and take more responsibility within the team."
+# "If we hire you, where do you see yourself after 5 years with Zenon?"
+"I'd like to grow into someone who can take ownership of important backend systems here, contribute to architectural decisions, and eventually mentor other engineers. If the role continues to give me opportunities to learn and take on more responsibility, I'd definitely like to build that journey within Zenon rather than constantly looking for the next switch."
+# About zenon
+“From my research, founded 2018 location New york, noida, 51-200 employess, Zenon is an AI-enabled technology company that works mainly around financial services, healthcare B2C and B2B use cases. What stood out to me is that Zenon focuses on implementing AI and automation into real business workflows rather than just providing consulting or analytics in isolation. I also liked the company's emphasis on measurable business impact. That's something I find interesting because I want to work on engineering problems that have a direct business impact.”
+
+#### salary negotiation
+1. Ask their range → 2. Try to understand budget → 3. Only disclose ₹18L if forced.
+# "What are your salary expectations?"
+"I'd like to understand the compensation range that you have budgeted for this role. Based on that, I'm happy to discuss and arrive at a number that's reasonable for both sides."
+# "Could you give us a number you're expecting?"
+"I do have a number in mind, but before putting a number on it, I'd like to understand the range you're considering for this position and the overall compensation structure."
+
+“I’ve done some research on the compensation for similar roles at Zenon, and considering my experience, backend expertise, and the responsibilities of this role, I’m looking for around ₹18 LPA. However, I’m open to discussing it based on the overall role and compensation structure.”
+# “That's higher than our budget. Would you be flexible?”
+“I understand. I’m open to discussing the number. My initial expectation is around ₹18 LPA, but I’d be happy to understand the overall compensation and role before we arrive at a final number.”
+# “Why 18?”
+“I’m considering not just my years of experience but also the backend responsibilities I’ve handled — payment workflows, production issues, performance optimization, distributed systems concepts, and my experience with Node.js. I’m also expanding into Java and Spring Boot. Based on the role and the market data I found for similar positions, I felt ₹18 LPA was a fair expectation.”
