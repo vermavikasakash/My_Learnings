@@ -1,13 +1,3 @@
-
-# QUES why you left your company within 6 months, then you are not working for 1 year.
-"I left my previous company because of a family emergency. Initially, I tried to manage both my professional and family responsibilities by working from home for around three months. However, I realized that I wasn't able to give my best to both, so I made the decision to resign and focus on my family situation.
-
-During this period, I also used the time to upskill myself. I worked on several backend and full-stack projects, strengthened my system-design and problem-solving skills, and consistently practiced DSA. I'm now in a position where I can fully focus on my career, which is why I'm actively looking for my next opportunity."
-# "What did you do for the entire year?"
-"I spent a significant amount of that time strengthening my technical skills. I worked on projects involving Node.js, microservices, Redis, RabbitMQ, Docker and system design, and I consistently practiced DSA. I've solved around 840 DSA problems across platforms, including around 790 on LeetCode."
-# "Why should we believe you won't leave again?"
-
-"The reason for my previous resignation was a specific family situation, not dissatisfaction with the company or the role. I initially tried to continue working remotely for three months before realizing I couldn't do justice to both responsibilities. That situation has been resolved, and I'm now fully focused on my career and looking for a long-term opportunity.
 ## QUES What exact APIs did you build? What was your ownership vs contribution?
 One concrete contribution was converting frontend-driven pagination into backend-driven paginated APIs. Earlier, large datasets were being fetched and paginated on the client side, which caused performance issues.
 
