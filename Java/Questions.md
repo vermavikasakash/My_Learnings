@@ -112,3 +112,20 @@ What is Spring Boot auto-configuration?
                          │
                          ↓
                Redis / Kafka / etc.
+
+java :
+Ques : just practice like basic dsa
+1, reverse a string. 2, check if a string is a palindrome. 3, find the largest element in an array.
+4, count frequency of characters in a string using HashMap. 5:, count word frequency in a sentence. 6:, remove duplicates from an ArrayList. 
+7:, find the second largest number in an array. 
+8:, find the first non-repeating character. 9:, filter even numbers from a list using streams. 
+10:, create an Employee class with fields, constructor, getters, setters, and toString, then create and print a few objects.
+
+collection :
+| Java            | Think of it as | Must know                                             |
+| --------------- | -------------- | ----------------------------------------------------- |
+| `ArrayList`     | JS Array       | `add`, `get`, `set`, `remove`, `size`, `contains`     |
+| `HashSet`       | JS Set         | `add`, `remove`, `contains`, `size`                   |
+| `HashMap`       | JS Map/Object  | `put`, `get`, `remove`, `containsKey`, `getOrDefault` |
+| `ArrayDeque`    | Stack/Queue    | `push`, `pop`, `peek`, `offer`, `poll`                |
+| `PriorityQueue` | Heap           | `offer`, `poll`, `peek`                               |
