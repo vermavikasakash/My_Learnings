@@ -226,3 +226,5 @@ pq.peek();
 pq.poll();
 
 Max heap: PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+
+# For primitives, == compares values. For objects, == compares references, whereas .equals() is used to compare logical/content equality when the class overrides it.
