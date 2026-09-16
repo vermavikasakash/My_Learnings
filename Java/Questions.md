@@ -121,11 +121,108 @@ Ques : just practice like basic dsa
 8:, find the first non-repeating character. 9:, filter even numbers from a list using streams. 
 10:, create an Employee class with fields, constructor, getters, setters, and toString, then create and print a few objects.
 
-collection :
-| Java            | Think of it as | Must know                                             |
-| --------------- | -------------- | ----------------------------------------------------- |
-| `ArrayList`     | JS Array       | `add`, `get`, `set`, `remove`, `size`, `contains`     |
-| `HashSet`       | JS Set         | `add`, `remove`, `contains`, `size`                   |
-| `HashMap`       | JS Map/Object  | `put`, `get`, `remove`, `containsKey`, `getOrDefault` |
-| `ArrayDeque`    | Stack/Queue    | `push`, `pop`, `peek`, `offer`, `poll`                |
-| `PriorityQueue` | Heap           | `offer`, `poll`, `peek`                               |
+# The Java Collections Framework contains interfaces such as Collection and Map. List, Set, and Queue extend Collection, while Map is a separate hierarchy for key-value mappings."
+
+Iterable	
+   │
+   └── Collection
+        │
+        ├── List
+        │    ├── ArrayList
+        │    └── LinkedList
+        │
+        ├── Set
+        │    ├── HashSet
+        │    ├── LinkedHashSet
+        │    └── TreeSet
+        │
+        └── Queue
+             ├── PriorityQueue
+             └── Deque
+                  └── ArrayDeque
+
+
+Map
+│
+├── HashMap
+├── LinkedHashMap
+└── SortedMap
+      └── TreeMap
+
+int[] arr
+
+List<Integer> list = new ArrayList<>();
+
+Set<Integer> set = new HashSet<>();
+
+Map<Integer, Integer> map = new HashMap<>();
+
+Deque<Integer> stack = new ArrayDeque<>();
+
+Deque<Integer> queue = new ArrayDeque<>();
+
+PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+Examples :
+i) Primitive array :
+int[] arr = new int[5];
+arr[0] = 10;
+int n = arr.length;
+
+Arrays.sort(arr);
+Arrays.fill(arr, -1);
+int[] copy = Arrays.copyOf(arr, arr.length);
+
+2D : 
+int[][] matrix = new int[3][4];
+matrix[0][1] = 10;
+
+1. ArrayList
+List<Integer> list = new ArrayList<>();
+
+list.add(10);
+list.get(0);
+list.set(0, 20);
+list.remove(0);
+list.size();
+list.contains(20);
+
+2. HashMap
+Map<Character, Integer> map = new HashMap<>();
+
+map.put('a', 1);
+map.get('a');
+map.remove('a');
+map.containsKey('a');
+map.getOrDefault('a', 0);
+map.size();
+
+3. HashSet
+Set<Integer> set = new HashSet<>();
+
+set.add(10);
+set.remove(10);
+set.contains(10);
+set.size();
+
+4. ArrayDeque
+// stack
+Deque<Integer> deque = new ArrayDeque<>();
+
+deque.push(10);
+deque.pop();
+deque.peek();
+
+queue problems:
+deque.offer(10);
+deque.poll();
+deque.peek();
+
+5. PriorityQueue (Heap problems)
+PriorityQueue<Integer> pq = new PriorityQueue<>(); // default minHeap
+
+pq.offer(10);
+pq.peek();
+pq.poll();
+
+Max heap: PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
