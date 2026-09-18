@@ -120,10 +120,50 @@ Q. Find the 2nd max age from table
 20. How would you implement real-time updates (e.g., WebSockets)?
 21. Have you deployed MERN apps on cloud platforms like AWS or Azure?
 
+// git commands
+1. Setting Up a Repository
+
+git init: Initializes a brand new, empty local Git repository in your current folder.
+
+git clone <url>: Downloads/copies an existing repository from a remote platform (like GitHub or GitLab) to your computer
+
+git config --global user.name "Name" & git config --global user.email "Email": 
+Configures your identity so Git knows who made a specific change or commit
+
+2. The Staging & Committing Workflow
+
+git status : Shows which files have been modified, created, or deleted, and whether they are ready to be saved.
+git add <filename> : Moves a specific modified file to the "staging area," prepping it to be saved.
+git add . : Stages all modified and new files in the current folder at once.
+git commit -m "message" : Saves the staged snapshot permanently to your local project history with a descriptive note.
+
+3. Branching & Merging
+git branch: Lists all the local branches in your current repository.
+git branch <branch-name>: Creates a new line of development (branch) with that specific name.
+git switch <branch-name> (or git checkout <branch-name>): Switches your active workspace to the specified branch.
+git checkout -b <branch-name>: Shortcut command that both creates a new branch and switches to it immediately.
+git merge <branch-name>: Combines history and changes from the specified branch into your current active branch.
+
+4. Sharing & Collaboration
+git push origin <branch-name>: Uploads your local commits up to the remote repository so others can see them.
+git pull: Fetches the newest updates from the remote repository and immediately merges them into your current local branch.
+git fetch: Downloads the latest history and changes from the remote repository, but does not automatically merge them into your local files.
+
+5. Reviewing History
+git log: Displays a chronological list of all previous commits, authors, dates, and commit messages.
 
 
+6. brand-new repository
+git branch -M :
+It renames your current active branch to main.
+Why it's used: Historically, Git's default initial branch was named master. Modern platforms (like GitHub and GitLab) now use main as the default primary branch. The -M flag forces the rename, ensuring your local default branch name matches the remote platform's standard.
 
+git remote add origin <url> 
 
+Meaning: It tells your local Git repository the internet address (URL) of your online server (like GitHub) and gives that address a nickname: origin.
+Why it's used: Git needs to know where to send your files. Instead of typing a long URL like https://github.com every single time you want to share code, you just type origin.
 
-
+git push -u origin 
+mainMeaning: It uploads your local main branch code up to the origin server for the first time, and the -u flag links them together.
+Why it's used: The -u (upstream) flag sets a permanent link between your local main branch and the main branch on GitHub. Because they are now linked, you won't need to type the full command next time—you can just type a simple git push or git pull from then on.
 

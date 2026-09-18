@@ -77,8 +77,9 @@ useEffect(() => {
 
 // Pagination FE
 const btnCount = Math.ceil(total / limit);
+const btnArr = Array(btnCount).fill(0);
 {
-  [...Array(btnCount)].map((_, i) => (
+  btnArr.map((_, i) => (
     <button key={i} onClick={() => pageHandler(i)}>
       {i + 1}
     </button>
