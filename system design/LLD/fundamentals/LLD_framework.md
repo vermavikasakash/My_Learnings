@@ -1,3 +1,21 @@
+Requirements
+   ↓
+Identify objects
+   ↓
+Responsibilities
+   ↓
+Relationships
+   ↓
+Interfaces / abstractions
+   ↓
+Apply SOLID
+   ↓
+Identify useful patterns
+   ↓
+Implement in Java
+   ↓
+Discuss trade-offs
+
 # Step 1: Identify Actors + Actions
 (Requirements)
 Who uses the system?
