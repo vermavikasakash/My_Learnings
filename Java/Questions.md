@@ -228,3 +228,31 @@ pq.poll();
 Max heap: PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
 
 # For primitives, == compares values. For objects, == compares references, whereas .equals() is used to compare logical/content equality when the class overrides it.
+
+1. OOP
+2. Collections
+3. Generics
+4. equals/hashCode
+5. Exception handling
+6. Streams
+7. Functional interfaces
+8. Optional
+9. Multithreading
+10. ExecutorService
+11. synchronized / locks
+12. ConcurrentHashMap
+13. JVM basics
+14. Java memory model
+
+// Springbbot
+Controller
+Service
+Repository
+Entity
+DTO
+Mapper
+Exception
+GlobalExceptionHandler
+Validation
+Pagination
+Transaction
