@@ -114,7 +114,7 @@ What is Spring Boot auto-configuration?
                Redis / Kafka / etc.
 
 java :
-Ques : just practice like basic dsa
+# Ques : just practice like basic dsa
 1, reverse a string. 2, check if a string is a palindrome. 3, find the largest element in an array.
 4, count frequency of characters in a string using HashMap. 5:, count word frequency in a sentence. 6:, remove duplicates from an ArrayList. 
 7:, find the second largest number in an array. 
@@ -229,20 +229,23 @@ Max heap: PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrd
 
 # For primitives, == compares values. For objects, == compares references, whereas .equals() is used to compare logical/content equality when the class overrides it.
 
-1. OOP
-2. Collections
+1. OOP + SOLID
+2. Collections internals
 3. Generics
-4. equals/hashCode
+4. equals/hashCode, == vs equals(), String / StringBuilder
 5. Exception handling
-6. Streams
-7. Functional interfaces
+6. Java 8 Streams / Functional interfaces & Lambda
+7. Garbage collection
 8. Optional
-9. Multithreading
+9. Multithreading / concurrency
 10. ExecutorService
 11. synchronized / locks
-12. ConcurrentHashMap
+12. HashMap / ConcurrentHashMap
 13. JVM basics
 14. Java memory model
+15. final, static, abstract
+16. Interfaces vs abstract classes
+
 
 // Springbbot
 Controller
@@ -256,3 +259,5 @@ GlobalExceptionHandler
 Validation
 Pagination
 Transaction
+JPA entities
+Dependency Injection
