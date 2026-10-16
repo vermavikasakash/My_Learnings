@@ -114,12 +114,6 @@ What is Spring Boot auto-configuration?
                Redis / Kafka / etc.
 
 java :
-# Ques : just practice like basic dsa
-1, reverse a string. 2, check if a string is a palindrome. 3, find the largest element in an array.
-4, count frequency of characters in a string using HashMap. 5:, count word frequency in a sentence. 6:, remove duplicates from an ArrayList. 
-7:, find the second largest number in an array. 
-8:, find the first non-repeating character. 9:, filter even numbers from a list using streams. 
-10:, create an Employee class with fields, constructor, getters, setters, and toString, then create and print a few objects.
 
 # The Java Collections Framework contains interfaces such as Collection and Map. List, Set, and Queue extend Collection, while Map is a separate hierarchy for key-value mappings."
 
@@ -238,7 +232,7 @@ Max heap: PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrd
 7. Garbage collection
 8. Optional
 9. Multithreading / concurrency
-10. ExecutorService
+10. ExecutorService vs CompletableFuture
 11. synchronized / locks
 12. HashMap / ConcurrentHashMap
 13. JVM basics
@@ -246,18 +240,31 @@ Max heap: PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrd
 15. final, static, abstract
 16. Interfaces vs abstract classes
 
+Virtual Threads — when should you use them?
+
+
 
 // Springbbot
+
 Controller
 Service
 Repository
 Entity
+JPA entities
+MySQL
 DTO
 Mapper
-Exception
+Exception handling
 GlobalExceptionHandler
 Validation
-Pagination
+Pagination,Search, 
 Transaction
-JPA entities
+Spring Security, JWT, RBAC, CORS
+
 Dependency Injection
+🌱 Round 3 — Spring Boot & Backend
+🔹 Constructor injection vs field injection
+🔹 @Transactional — propagation and isolation
+🔹 N+1 query problem in Hibernate/JPA
+🔹 Redis caching — when and why?
+🔹 API idempotency and its importance
