@@ -25,6 +25,17 @@ FROM Customers
 ORDER BY age DESC
 LIMIT 1 OFFSET 1 ;
 
+Ques. UNION vs. UNION ALL
+Ans ✅: UNION operator combines the result sets of two or more SELECT statements into a single, distinct result set by automatically removing duplicate rows. 
+It stacks the data vertically (adding more rows), which is fundamentally different from a JOIN that combines data horizontally by adding more columns.
+
+SELECT city FROM employees
+UNION                         // UNION ALL
+SELECT city FROM customers
+ORDER BY city;
+
+UNION removes duplicates and performance is slow, union keep all and hence performance is bettar.
+
 Ques : What is Idempotency & transaction?
 Ans ✅: An operation is idempotent if doing it multiple times gives the same result as doing it once
 idempotency Prevent duplicate effects.
