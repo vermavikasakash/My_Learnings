@@ -113,6 +113,28 @@ server.on("close", () => { // close callback
 
 // If nothing is listening on port 5000, the connection can fail and Node/libuv handles the underlying network error asynchronously.
 
+QUES. check the output
+console.log("sync1");
+setImmediate(()=> console.log("immediate"), 0);
+
+let p = Promise.resolve("promise");
+p.then(d => console.log(d));
+
+console.log("sync2");
+process.nextTick(()=> console.log("tick"));
+
+setTimeout(()=> console.log("time out"), 0);
+console.log("sync3");
+✅ ANS: 
+sync1
+sync2
+sync3
+tick
+promise
+time out
+immediate
+
+
 QUES 2.What is cluster in node js?
 ✅ ANS: In Node.js, a cluster is a group of worker processes that share the same server port.
  Clustering allows you to take advantage of multi-core processors and scale your application.

@@ -140,3 +140,23 @@ export const fetchProducts = createAsyncThunk("products/fetch", async () => {
   const res = await fetch(url);
   return res.json();
 });
+
+// error handler express
+const errorHandler = (err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+
+    res.status(statusCode).json({success: false,message: err.message || "Internal Server Error"});
+};
+
+module.exports = errorHandler;
+
+app.get("/users", (req, res, next) => {
+    try {
+        throw new Error("Something went wrong");
+    } catch (err) {
+        next(err); // use cases
+    }
+});
+
+// Always register error handler after routes
+app.use(errorHandler);
