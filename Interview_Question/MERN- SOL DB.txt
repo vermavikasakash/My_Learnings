@@ -10,6 +10,14 @@
 | **Temporary Tables**       | Store intermediate query results within a session for complex reporting or repeated use.                                   |
 | **Query Optimization**     | Reduce query cost by selecting only needed data, indexing properly, avoiding unnecessary scans/joins, and using `EXPLAIN`. |
 
+A simplified SQL logical processing order:
+1. FROM / JOIN
+2. WHERE
+3. GROUP BY
+4. HAVING
+5. SELECT
+6. ORDER BY
+
 1.Difference between Sql and NoSQL
 2.Difference Primary key and foreign key
 3.Find the 2nd max age from table
